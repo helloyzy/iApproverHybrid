@@ -1,0 +1,7 @@
+# Exclude the temp directory
+tmp
+
+# Exclude the build directory
+build
+
+build.log
