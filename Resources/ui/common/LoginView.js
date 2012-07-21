@@ -1,7 +1,8 @@
 exports.createLoginView = _loginView;
 
 function _strTrim(str) {
-	return str.replace('/(^/s*)|(/s*$)/g', '');
+    var pattern = new RegExp('(^\\s*)|(\\s*$)', 'g'); 
+	return str.replace(pattern, '');
 }
 
 function _clone(src, target) {
@@ -68,8 +69,9 @@ function _loginView() {
 		return lbl;
 	};
 	
-	function _text(hintText, props) {
+	function _text(value, hintText, props) {
 		var text = Ti.UI.createTextField({
+		    value:value,
 			hintText:hintText,
 			top:'5%',
 			left:'5%',
@@ -82,6 +84,11 @@ function _loginView() {
 		return text;
 	};
 	
+	var user = require('model/IAUser');
+	user.init();
+	var settings = require('model/IASettings');
+	settings.init();
+	
 	loginView.add(_label('Log in', {
 		color: 'black',
 		// shadowColor: '#aaa',
@@ -90,13 +97,14 @@ function _loginView() {
 	}));
 	
 	loginView.add(_label('Username'));
-	var txtUsername = _text('Input username', {
+	var txtUsername = _text(user.username, 'Input username', {
 		autocapitalization:	Ti.UI.TEXT_AUTOCAPITALIZATION_WORDS
 	});
 	loginView.add(txtUsername);
 	
 	loginView.add(_label('Password'));
-	var txtPwd = _text('Input password', {
+	// TODO display password on the setting remember me
+	var txtPwd = _text(user.password, 'Input password', {
 		passwordMask:true
 	});
 	loginView.add(txtPwd);
@@ -111,16 +119,26 @@ function _loginView() {
 	loginView.add(btn);
 	
 	// event handling
-	btn.addEventListener('click', function(e) {		
-		if (!txtUsername.value) {
+	btn.addEventListener('click', function(e) {	
+	    var username = _strTrim(txtUsername.value);
+	    var password = _strTrim(txtPwd.value);
+		if (!username) {
 			alert('Please input your user name!');
 			txtUsername.focus();
 			return;
-		} else if (!txtPwd.value) {
+		} else if (!password) {
 			alert('Please input your password!');
 			txtPwd.focus();
 			return;
 		}
+		//TODO verify username and password against Primavera
+		user.username = username;
+		user.password = password;
+		user.writeUserInfo({
+		    username:username,
+		    password:password //TODO store password if isRemember me on 
+		});
+		//TODO write settings 
 	})
 	
 	
