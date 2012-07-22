@@ -1,17 +1,7 @@
 exports.createLoginView = _loginView;
 
-function _strTrim(str) {
-    var pattern = new RegExp('(^\\s*)|(\\s*$)', 'g'); 
-	return str.replace(pattern, '');
-}
-
-function _clone(src, target) {
-	if (src && target) {
-		for (prop in target) {
-			src[prop] = target[prop];
-		}
-	}
-}
+var _strTrim = require('utils').strTrim;
+var _clone = require('utils').clone;
 
 function _loginView() {
 	
@@ -84,10 +74,13 @@ function _loginView() {
 		return text;
 	};
 	
-	var user = require('model/IAUser');
-	user.init();
-	var settings = require('model/IASettings');
-	settings.init();
+	var userModule = require('model/IAUser');
+	userModule.init();
+	var settingsModule = require('model/IASettings');
+	settingsModule.init();
+	
+	user = userModule.userInfo();
+	settings = settingsModule.settingsInfo();
 	
 	loginView.add(_label('Log in', {
 		color: 'black',
@@ -104,7 +97,7 @@ function _loginView() {
 	
 	loginView.add(_label('Password'));
 	// TODO display password on the setting remember me
-	var txtPwd = _text(user.password, 'Input password', {
+	var txtPwd = _text(settings.isRememberMe?user.password:'', 'Input password', {
 		passwordMask:true
 	});
 	loginView.add(txtPwd);
@@ -132,13 +125,14 @@ function _loginView() {
 			return;
 		}
 		//TODO verify username and password against Primavera
-		user.username = username;
-		user.password = password;
-		user.writeUserInfo({
+		userModule.setUserInfo({
 		    username:username,
-		    password:password //TODO store password if isRemember me on 
-		});
-		//TODO write settings 
+		    password:password
+		})
+		//TODO write settings
+		settingsModule.setSettingsInfo({
+		    isRememberMe:false
+		}) 
 	})
 	
 	
