@@ -1,7 +1,7 @@
 exports.createLoginView = _loginView;
 
 var _strTrim = require('utils').strTrim;
-var _clone = require('utils').clone;
+var _extend = require('utils').extend;
 
 function _loginView() {
 	
@@ -23,26 +23,32 @@ function _loginView() {
 		contentWidth:'auto',
 		contentHeight:'auto',
 		width:'90%',
-		height:'70%',
+		height:'80%',
 		borderColor:'#BFBFBF',
 		borderWidth:1,
 		borderRadius:10,
 		layout:'vertical'
 	});
 	
-	function _inputControlHeight() {
+	function _controlHeight(androidHeight, iOSHeight, otherHeight) {
 		var osname = Ti.Platform.osname;
 		if (osname == 'android') {
-			return 70;
+			return androidHeight;
+		} else if (osname == 'ipad' || osname == 'iphone') {
+			return iOSHeight;
 		} else {
-			return 40;
+			return otherHeight;
 		}
+	}
+	
+	function _inputControlHeight() {
+		return _controlHeight(70, 40, 40);
 	}
 	
 	function _fontSize(size) {
 		var osname = Ti.Platform.osname;
 		if (osname == 'android') {
-			return size + 5;
+			return size + 8;
 		}
 		return size;
 	}
@@ -55,7 +61,7 @@ function _loginView() {
 			color:'gray',
 			font:{fontWeight:'bold', fontSize:_fontSize(18)}
 		});		
-		_clone(lbl, props);
+		_extend(props, lbl); // add customized props 
 		return lbl;
 	};
 	
@@ -70,7 +76,7 @@ function _loginView() {
 			clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ONBLUR,
 			borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
 		});
-		_clone(text, props);
+		_extend(props, text); // add customized props
 		return text;
 	};
 	
@@ -79,8 +85,8 @@ function _loginView() {
 	var settingsModule = require('model/IASettings');
 	settingsModule.init();
 	
-	user = userModule.userInfo();
-	settings = settingsModule.settingsInfo();
+	var user = userModule.userInfo();
+	var isRemMe = settingsModule.settingsInfo().isRememberMe;
 	
 	loginView.add(_label('Log in', {
 		color: 'black',
@@ -96,22 +102,58 @@ function _loginView() {
 	loginView.add(txtUsername);
 	
 	loginView.add(_label('Password'));
-	// TODO display password on the setting remember me
-	var txtPwd = _text(settings.isRememberMe?user.password:'', 'Input password', {
+	var txtPwd = _text(isRemMe ? user.password:'', 'Input password', {
 		passwordMask:true
 	});
 	loginView.add(txtPwd);
 	
-	var btn = Ti.UI.createButton({
+	var remMeViewHeight = _controlHeight(70, 30);
+	var remMeView = Ti.UI.createView({
 		top:'5%',
+		left:0,
+		width:'100%',
+		height:remMeViewHeight,
+		layout:'horizontal'
+
+	});
+	var remMeSwitch = Ti.UI.createSwitch({
+		titleOn:'Yes',
+		titleOff:'No',
+		value:isRemMe,
+		top: 0,
+		width: '30%',
+		left: '5%'
+	});
+	remMeView.add(_label('Remember me', {
+		left: '7%',
+		top: '2%',
+		font:{fontWeight:'normal', fontSize:_fontSize(16)},
+		width: '50%'
+	}));
+	remMeView.add(remMeSwitch);
+	loginView.add(remMeView);
+	
+	var btn = Ti.UI.createButton({
+		top:'3%',
 		left:'5%',
-		width:'30%',
+		width:'35%',
 		height:_inputControlHeight(),
 		title: 'Log in'
-	})
+	});
 	loginView.add(btn);
 	
 	// event handling
+	remMeSwitch.addEventListener('change', function(e) {
+		var isRemMe = e.source.value; // e.source --> switch control
+		settingsModule.setSettingsInfo({
+		    isRememberMe:isRemMe
+		});
+		if (!isRemMe) { // clear password in the properties
+			userModule.setUserInfo({
+			    password:''
+			});
+		}
+	});
 	btn.addEventListener('click', function(e) {	
 	    var username = _strTrim(txtUsername.value);
 	    var password = _strTrim(txtPwd.value);
@@ -125,14 +167,55 @@ function _loginView() {
 			return;
 		}
 		//TODO verify username and password against Primavera
+		function getUserToken() {
+			var url = 'https://stlpv1.perficient.com/primavera/web/?urlVer=3&task=flexTimeAndExpense';
+			Ti.API.log(url);
+			var request = Ti.Network.createHTTPClient({
+				onload: function(e) {
+					Ti.API.log(this.responseText);
+				},
+				onerror: function(e) {
+					Ti.API.error(e.error);
+				},
+				timeout:10000
+			});
+			request.open('GET', url);
+			request.send();
+		}
+		
+		function verifyUserInfo(username, password) {
+			var url = 'https://stlpv1.perficient.com/primavera/web'; 
+			// var url = 'https://stlpv1.perficient.com/primavera/web/command/command?'; 
+			// var parameters = 'username=' + username + '&password=' + password;
+			// var encodedParams = Ti.Network.encodeURIComponent(parameters);
+			// var url = url + encodedParams;
+			Ti.API.log(url);
+			var request = Ti.Network.createHTTPClient({
+				onload: function(e) {
+					Ti.API.log(this.responseText);
+				},
+				onerror: function(e) {
+					Ti.API.error(e.error);
+					getUserToken();
+				},
+				timeout:10000
+			});
+			request.open('POST', url);
+			request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+			
+			
+			// request.send();
+			
+			request.send({
+				username:username,
+				password:password
+			});
+		}
+		verifyUserInfo(username, password);
 		userModule.setUserInfo({
 		    username:username,
-		    password:password
-		})
-		//TODO write settings
-		settingsModule.setSettingsInfo({
-		    isRememberMe:false
-		}) 
+		    password:remMeSwitch.value ? password : ''
+		});
 	})
 	
 	

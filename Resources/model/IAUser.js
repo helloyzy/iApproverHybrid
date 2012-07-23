@@ -1,18 +1,19 @@
 var IAUser = {};
 
+var _extend = require('utils').extend;
+
 function _readUserInfo() {
-    //TODO read username and password, excluding token
+    IAUser.username = Ti.App.Properties.getString('username', '');
+    IAUser.password = Ti.App.Properties.getString('password', '');
 }
 
 function _writeUserInfo() {
-    // TODO write username and password to the local cache, excluding token
+    Ti.App.Properties.setString('username', IAUser.username);
+    Ti.App.Properties.setString('password', IAUser.password);
 }
 
 exports.init = function() {
-    // read from local cache
     _readUserInfo();
-    IAUser.username = '';
-    IAUser.password = '';
     IAUser.token = '';
 }
 
@@ -21,14 +22,12 @@ exports.init = function() {
  * @param {Object} user
  */
 exports.setUserInfo = function(user) {
-    var utils = require('utils');
-    utils.clone(IAUser, user);
+    _extend(user, IAUser);
     _writeUserInfo();
 }
 
 exports.userInfo = function() {
     var result = {};
-    var utils = require('utils');
-    utils.clone(IAUser, result);
+    _extend(IAUser, result);
     return result;
 }

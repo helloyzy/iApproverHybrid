@@ -4,14 +4,29 @@ exports.strTrim = function(str) {
 }
 
 /**
- * Clone properties from target to src
+ * Clone a object which has all properties from src
+ * @param {Object} src
+ */
+exports.clone = function(src) {
+    var resutl = null;
+    if (src) {
+    	result = {};
+    	for (prop in src) {
+            result[prop] = src[prop];
+        }
+    }
+    return result;
+}
+
+/**
+ * Copy properties from src to target
  * @param {Object} src
  * @param {Object} target
  */
-exports.clone = function(src, target) {
-    if (src && target) {
-        for (prop in target) {
-            src[prop] = target[prop];
+exports.extend = function(src, target) {
+	if (src && target) {
+        for (prop in src) {
+            target[prop] = src[prop];
         }
     }
 }
