@@ -124,8 +124,12 @@ pvService.locationOfApproval = function(approval, doc){
 	
 }
 
+var approvalIdentityToReportIdentityMap=null, reportIdentityToTimeSheetRowIdentityArrayMap=null, timeSheetRowIdentityToLocationIdentityMap=null;
 
 pvService.approvalIdentityToReportIdentity = function(doc){
+	if(approvalIdentityToReportIdentityMap!=null){
+		return approvalIdentityToReportIdentityMap;
+	}
 	var map = {};
 	var approvalList = doc.getElementsByTagName("approvals");
 	for (var i = 0; i < approvalList.length; i++) {
@@ -134,11 +138,14 @@ pvService.approvalIdentityToReportIdentity = function(doc){
 		var ReportIdentity = theApproval.getElementsByTagName("reportRef").item(0).getAttribute("identity");
 		map[approvalIdentity]=ReportIdentity;
 	}
-	return map;
+	return approvalIdentityToReportIdentityMap = map;
 }
 
 
 pvService.reportIdentityToTimeSheetRowIdentityArray = function(doc) {
+	if(reportIdentityToTimeSheetRowIdentityArrayMap!=null){
+		return reportIdentityToTimeSheetRowIdentityArrayMap;
+	}
 	var map = {};
 	var timeReports = doc.getElementsByTagName("timeReports");
 	for (var i = 0; i < timeReports.length; i++) {
@@ -156,12 +163,15 @@ pvService.reportIdentityToTimeSheetRowIdentityArray = function(doc) {
 		map[reportIdentity] = timeSheetRowIdentityArray;
 	}
 
-	return map;
+	return reportIdentityToTimeSheetRowIdentityArrayMap = map;
 }
 
 pvService.timeSheetRowIdentityToLocationIdentity = function(doc) {
+	if(timeSheetRowIdentityToLocationIdentityMap!=null){
+		return timeSheetRowIdentityToLocationIdentityMap;
+	}
+	
 	var map = {};
-
     var timeSheetRows = doc.getElementsByTagName("timeSheetRows");
 	for (var i = 0; i < timeSheetRows.length; i++) {
 		var theTimeSheetRow = timeSheetRows.item(i);
@@ -170,7 +180,7 @@ pvService.timeSheetRowIdentityToLocationIdentity = function(doc) {
 		map[theTimeSheetRowIdentity]=theLocationIdentity;
 	}
 	
-	return map;
+	return timeSheetRowIdentityToLocationIdentityMap = map;
 }
 
 pvService.locationIdentityToLocationName = function(doc) {

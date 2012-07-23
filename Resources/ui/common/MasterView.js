@@ -1,7 +1,7 @@
 //Master View Component Constructor
 
 var mvService = require("/ui/common/PVService").getService();
-var mvTable = Ti.UI.createTableView({});
+var mvTable = Ti.UI.createTableView();
 
 function MasterView() {
 	//create object instance, parasitic subclass of Observable
@@ -41,12 +41,12 @@ function mainViewCallback(){
         mainViewRows.push(row);
 	}
     
-    for (var i = 0; i < mainViewRows.length; i++) {
-		Titanium.API.log("-----row.name--->" +mainViewRows[i]['name']);
-		Titanium.API.log("-----row.hours--->" +mainViewRows[i]['hours']);
-		Titanium.API.log("-----row.location--->" +mainViewRows[i]['location']);
-		Titanium.API.log("-----row.dateRange--->" +mainViewRows[i]['dateRange']);
-	}
+    // for (var i = 0; i < mainViewRows.length; i++) {
+		// Titanium.API.log("-----row.name--->" +mainViewRows[i]['name']);
+		// Titanium.API.log("-----row.hours--->" +mainViewRows[i]['hours']);
+		// Titanium.API.log("-----row.location--->" +mainViewRows[i]['location']);
+		// Titanium.API.log("-----row.dateRange--->" +mainViewRows[i]['dateRange']);
+	// }
 
 	mvTable.setData(getTableDataFromMainViewRows(mainViewRows));
 	
@@ -54,31 +54,44 @@ function mainViewCallback(){
 
 function getTableDataFromMainViewRows(mainViewRows){
 	 var tableData = [];
+
 	 for (var i = 0; i < mainViewRows.length; i++) {
-		var row = Ti.UI.createTableViewRow();
+		var row = Ti.UI.createTableViewRow({
+			height : 51.2  //51.2 = 1024*5%
+		});
 		
 		var name = Ti.UI.createLabel({
-			top : 5,
-			left : 10,
-			font:{fontFamily:'Arial',fontWeight:'bold',fontSize:17},
+			top : "5%",
+			left : "2%",
+			width : "50%",
+			color: "black",
+			font:{ fontWeight:'bold', fontSize:17},
 			text : mainViewRows[i]['name']
+			//text : "SiSi, StevenSteven"
 		});
 		var dateRange = Ti.UI.createLabel({
-			top : 5,
-			left : 170,
+			top : "5%",
+			left : "54%",
+			width : "40%",
+			color: "black",
 			text : mainViewRows[i]['dateRange']
+			//text : "11-23"
 		});
 		var location = Ti.UI.createLabel({
-			Top : 25,
-			left : 10,
-			height : 30,
+			top : "45%",
+			left : "2%",
+			width : "50%",
+			color: "black",
 			text : mainViewRows[i]['location']
+			//text : "Nontravel/China"
 		});
 		var hours = Ti.UI.createLabel({
-			Top : 25,
-			left : 170,
-			height : 30,
+			top : "45%",
+			left : "54%",
+			width : "40%",
+			color: "black",
 			text : mainViewRows[i]['hours']
+			//text : "40 hours"
 		});
 
 		row.add(name);
