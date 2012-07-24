@@ -20,7 +20,7 @@ function ApplicationWindow() {
 		top:0,
 		bottom:0,
 		left:0,
-		width:320
+		width:300
 	});
 	masterContainer.add(masterView);
 	self.add(masterContainer);
@@ -30,7 +30,7 @@ function ApplicationWindow() {
 		top:0,
 		bottom:0,
 		right:0,
-		left:320
+		left:300
 	});
 	detailContainer.add(detailView);
 	self.add(detailContainer);

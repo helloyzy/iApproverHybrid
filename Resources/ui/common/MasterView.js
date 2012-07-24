@@ -1,7 +1,11 @@
 //Master View Component Constructor
 
 var mvService = require("/ui/common/PVService").getService();
-var mvTable = Ti.UI.createTableView();
+var mvTable = Ti.UI.createTableView({
+	allowsSelection:true,
+	// selectedBackgroundColor: 'blue',
+	// touchEnabled: true
+});
 
 function MasterView() {
 	//create object instance, parasitic subclass of Observable
@@ -16,9 +20,15 @@ function MasterView() {
 	//add behavior
 	mvTable.addEventListener('click', function(e) {
 		self.fireEvent('itemSelected', {
-			name:e.rowData.title,
-			price:e.rowData.price
+			// name:e.rowData.getChildren()[0].getText(),
+			// dateRange:e.rowData.getChildren()[1].getText(),
+			// location:e.rowData.getChildren()[2].getText(),
+			// hours:e.rowData.getChildren()[3].getText()
+			name : "name value"
 		});
+		
+		//Titanium.API.log("-----e.rowData.getChildren(0)--->" + e.rowData.getChildren()[0].getText());
+		
 	});
 	
 	return self;
@@ -63,33 +73,37 @@ function getTableDataFromMainViewRows(mainViewRows){
 		var name = Ti.UI.createLabel({
 			top : "5%",
 			left : "2%",
-			width : "50%",
+			width : "55%",
 			color: "black",
+			touchEnabled: false,
 			font:{ fontWeight:'bold', fontSize:17},
 			text : mainViewRows[i]['name']
 			//text : "SiSi, StevenSteven"
 		});
 		var dateRange = Ti.UI.createLabel({
 			top : "5%",
-			left : "54%",
+			left : "60%",
 			width : "40%",
 			color: "black",
+			touchEnabled: false,
 			text : mainViewRows[i]['dateRange']
 			//text : "11-23"
 		});
 		var location = Ti.UI.createLabel({
 			top : "45%",
 			left : "2%",
-			width : "50%",
+			width : "55%",
 			color: "black",
+			touchEnabled: false,
 			text : mainViewRows[i]['location']
 			//text : "Nontravel/China"
 		});
 		var hours = Ti.UI.createLabel({
 			top : "45%",
-			left : "54%",
+			left : "60%",
 			width : "40%",
 			color: "black",
+			touchEnabled: false,
 			text : mainViewRows[i]['hours']
 			//text : "40 hours"
 		});
