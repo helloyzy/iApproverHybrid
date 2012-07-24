@@ -5,7 +5,7 @@ function ApplicationWindow() {
 		
 	//create object instance
 	var self = Ti.UI.createWindow({
-		title:'Products',
+		title:'iApprove',
 		exitOnClose:true,
 		navBarHidden:false,
 		backgroundColor:'#ffffff'
@@ -20,7 +20,7 @@ function ApplicationWindow() {
 		//create detail view container
 		var detailView = new DetailView();
 		var detailContainerWindow = Ti.UI.createWindow({
-			title:'Product Details',
+			title:'iApprove Details',
 			navBarHidden:false,
 			backgroundColor:'#ffffff'
 		});

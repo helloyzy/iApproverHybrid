@@ -14,13 +14,13 @@ function ApplicationWindow() {
 		
 	//create master view container
 	var masterContainerWindow = Ti.UI.createWindow({
-		title:'Products'
+		title:'iApprove'
 	});
 	masterContainerWindow.add(masterView);
 	
 	//create detail view container
 	var detailContainerWindow = Ti.UI.createWindow({
-		title:'Product Details'
+		title:'iApprove Details'
 	});
 	detailContainerWindow.add(detailView);
 	
