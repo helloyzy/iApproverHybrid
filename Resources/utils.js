@@ -1,3 +1,19 @@
+/**
+ * substring of str between left and right
+ */
+exports.strBetween = function(str, left, right) {
+	var leftIndex = str.indexOf(left);
+	if (leftIndex < 0) {
+		return '';
+	}
+	var startIndex = leftIndex + left.length;
+	var endIndex = str.indexOf(right, startIndex);
+	if (endIndex >= 0) {
+		return str.substring(startIndex, endIndex);
+	}
+	return '';
+}
+
 exports.strTrim = function(str) {
     var pattern = new RegExp('(^\\s*)|(\\s*$)', 'g'); 
     return str.replace(pattern, '');
@@ -29,4 +45,10 @@ exports.extend = function(src, target) {
             target[prop] = src[prop];
         }
     }
+}
+
+exports.bind = function(thisRef, func) {
+	return function() {
+		return func.apply(thisRef, arguments);
+	};
 }

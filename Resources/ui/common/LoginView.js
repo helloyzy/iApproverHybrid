@@ -1,7 +1,10 @@
 exports.createLoginView = _loginView;
 
 var _strTrim = require('utils').strTrim;
+var _strBetween = require('utils').strBetween;
 var _extend = require('utils').extend;
+var userModule = require('model/IAUser');
+var settingsModule = require('model/IASettings');
 
 function _loginView() {
 	
@@ -80,9 +83,8 @@ function _loginView() {
 		return text;
 	};
 	
-	var userModule = require('model/IAUser');
+	
 	userModule.init();
-	var settingsModule = require('model/IASettings');
 	settingsModule.init();
 	
 	var user = userModule.userInfo();
@@ -141,6 +143,12 @@ function _loginView() {
 		title: 'Log in'
 	});
 	loginView.add(btn);
+	var activityIndicator = Ti.UI.createActivityIndicator({
+		message: 'Authenticating user...'
+		// style:Ti.UI.iPhone.ActivityIndicatorStyle.DARK,
+		// top: '40%',
+		// left: '40%'
+	});
 	
 	// event handling
 	remMeSwitch.addEventListener('change', function(e) {
@@ -154,6 +162,85 @@ function _loginView() {
 			});
 		}
 	});
+	
+	function validationFailure() {
+		activityIndicator.hide();
+		var errorDialog = Ti.UI.createAlertDialog({
+			message:'Username or password incorrect, please check it!',
+			ok: 'OK',
+			title: 'Authentication Failure'
+		});
+		errorDialog.show();
+	}
+	
+	function validationSuccess() {
+		getUserToken();
+	}
+	
+	function userTokenSuccess(responseStr) {
+		activityIndicator.hide();
+		var userToken = _strBetween(responseStr, 'AuthInfo', '&timeout=');
+		var userId = _strBetween(responseStr, '&userOID=', '&configureExpenses=');
+		Ti.API.log(Ti.Network.decodeURIComponent(userToken));
+		Ti.API.log(userId);
+	}
+	
+	function getUserToken() {
+		var url = 'https://stlpv1.perficient.com/primavera/web/?urlVer=3&task=flexTimeAndExpense';
+		Ti.API.log(url);
+		var request = Ti.Network.createHTTPClient({
+			onload: function(e) {
+				Ti.API.log(this.responseText);
+				userTokenSuccess(this.responseText);
+			},
+			onerror: function(e) {
+				Ti.API.error(e.error);
+				validationFailure();
+			},
+			timeout:10000
+		});
+		request.open('GET', url);
+		request.send();
+	}
+	
+	function verifyUserInfo(username, password) {
+		var url = 'https://stlpv1.perficient.com/primavera/web'; 
+		// var url = 'https://stlpv1.perficient.com/primavera/web/command/command?'; 
+		// var parameters = 'username=' + username + '&password=' + password;
+		// var encodedParams = Ti.Network.encodeURIComponent(parameters);
+		// var url = url + encodedParams;
+		Ti.API.log(url);
+		var request = Ti.Network.createHTTPClient({
+			onload: function(e) {
+				var responseStr = this.responseText;
+				Ti.API.log(responseStr);
+				if (responseStr.indexOf('<title>Not Authenticated</title>') < 0) {
+					validationSuccess();
+				} else {
+					validationFailure();
+				}
+			},
+			onerror: function(e) {
+				Ti.API.error(e.error);
+				if (e.error.indexOf('The request failed because it redirected too many times') >= 0) {
+					validationSuccess();
+				} else {
+					validationFailure();
+				}
+			},
+			timeout:10000
+		});
+		request.open('POST', url);
+		request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+		
+		// request.send();
+		
+		request.send({
+			username:username,
+			password:password
+		});
+	}
+	
 	btn.addEventListener('click', function(e) {	
 	    var username = _strTrim(txtUsername.value);
 	    var password = _strTrim(txtPwd.value);
@@ -167,50 +254,9 @@ function _loginView() {
 			return;
 		}
 		//TODO verify username and password against Primavera
-		function getUserToken() {
-			var url = 'https://stlpv1.perficient.com/primavera/web/?urlVer=3&task=flexTimeAndExpense';
-			Ti.API.log(url);
-			var request = Ti.Network.createHTTPClient({
-				onload: function(e) {
-					Ti.API.log(this.responseText);
-				},
-				onerror: function(e) {
-					Ti.API.error(e.error);
-				},
-				timeout:10000
-			});
-			request.open('GET', url);
-			request.send();
-		}
-		
-		function verifyUserInfo(username, password) {
-			var url = 'https://stlpv1.perficient.com/primavera/web'; 
-			// var url = 'https://stlpv1.perficient.com/primavera/web/command/command?'; 
-			// var parameters = 'username=' + username + '&password=' + password;
-			// var encodedParams = Ti.Network.encodeURIComponent(parameters);
-			// var url = url + encodedParams;
-			Ti.API.log(url);
-			var request = Ti.Network.createHTTPClient({
-				onload: function(e) {
-					Ti.API.log(this.responseText);
-				},
-				onerror: function(e) {
-					Ti.API.error(e.error);
-					getUserToken();
-				},
-				timeout:10000
-			});
-			request.open('POST', url);
-			request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-			
-			
-			// request.send();
-			
-			request.send({
-				username:username,
-				password:password
-			});
-		}
+		// alert(_strBetween('hellommmworhelld', 'lo', 'hel'));
+		// alert(_strBetween('fejifjeifjei', 'jif', 'jei'));
+		activityIndicator.show();
 		verifyUserInfo(username, password);
 		userModule.setUserInfo({
 		    username:username,
@@ -220,6 +266,9 @@ function _loginView() {
 	
 	
 	loginBgView.add(loginView);	
+	if (Ti.Platform.osname == 'iphone' || Ti.Platform.osname == 'ipad') {
+		loginBgView.add(activityIndicator);
+	}	
 	return loginBgView;
 }
 
