@@ -6,6 +6,7 @@ var mvTable = Ti.UI.createTableView({
 	// selectedBackgroundColor: 'blue',
 	// touchEnabled: true
 });
+var selfMainViewRows = null;
 
 function MasterView() {
 	//create object instance, parasitic subclass of Observable
@@ -20,14 +21,11 @@ function MasterView() {
 	//add behavior
 	mvTable.addEventListener('click', function(e) {
 		self.fireEvent('itemSelected', {
-			// name:e.rowData.getChildren()[0].getText(),
-			// dateRange:e.rowData.getChildren()[1].getText(),
-			// location:e.rowData.getChildren()[2].getText(),
-			// hours:e.rowData.getChildren()[3].getText()
-			name : "name value"
+			dateRange : selfMainViewRows[e.index]['dateRange']
 		});
-		
-		//Titanium.API.log("-----e.rowData.getChildren(0)--->" + e.rowData.getChildren()[0].getText());
+
+		//Titanium.API.log("-----dateRange to detailView----->" + selfMainViewRows[e.index]['dateRange']); 
+		//Titanium.API.log("-----e.index;--->" + e.index); 
 		
 	});
 	
@@ -39,7 +37,7 @@ function mainViewCallback(){
 	var doc = this.responseXML.documentElement;
 	Titanium.API.log("-----getTimeReportCallback.responseText--->" + this.responseText);
 
-    var mainViewRows = [];
+    selfMainViewRows = [];
 	var approvals = doc.getElementsByTagName("approvals");
 	for (var i = 0; i < approvals.length; i++) {
 		var row = {};
@@ -48,17 +46,19 @@ function mainViewCallback(){
 		row['hours'] = parseInt(theApproval.getAttribute("detailCount"))/60 + " hours";
 		row['location'] = mvService.locationOfApproval(theApproval, doc);
 		row['dateRange'] = mvService.dateRangeOfApproval(theApproval, doc);
-        mainViewRows.push(row);
+		row['dateRangeFormatted'] = mvService.formatDateRange(row['dateRange']);
+        selfMainViewRows.push(row);
 	}
     
-    // for (var i = 0; i < mainViewRows.length; i++) {
-		// Titanium.API.log("-----row.name--->" +mainViewRows[i]['name']);
-		// Titanium.API.log("-----row.hours--->" +mainViewRows[i]['hours']);
-		// Titanium.API.log("-----row.location--->" +mainViewRows[i]['location']);
-		// Titanium.API.log("-----row.dateRange--->" +mainViewRows[i]['dateRange']);
+    // for (var i = 0; i < selfMainViewRows.length; i++) {
+		// Titanium.API.log("-----row.name--->" +selfMainViewRows[i]['name']);
+		// Titanium.API.log("-----row.hours--->" +selfMainViewRows[i]['hours']);
+		// Titanium.API.log("-----row.location--->" +selfMainViewRows[i]['location']);
+		// Titanium.API.log("-----row.dateRange--->" +selfMainViewRows[i]['dateRange']);
+		// Titanium.API.log("-----row.dateRangeFormatted--->" +selfMainViewRows[i]['dateRangeFormatted']);
 	// }
 
-	mvTable.setData(getTableDataFromMainViewRows(mainViewRows));
+	mvTable.setData(getTableDataFromMainViewRows(selfMainViewRows));
 	
 }
 
@@ -67,6 +67,7 @@ function getTableDataFromMainViewRows(mainViewRows){
 
 	 for (var i = 0; i < mainViewRows.length; i++) {
 		var row = Ti.UI.createTableViewRow({
+			//selectedBackgroundColor : "blue",
 			height : 51.2  //51.2 = 1024*5%
 		});
 		
@@ -80,13 +81,13 @@ function getTableDataFromMainViewRows(mainViewRows){
 			text : mainViewRows[i]['name']
 			//text : "SiSi, StevenSteven"
 		});
-		var dateRange = Ti.UI.createLabel({
+		var dateRangeFormatted = Ti.UI.createLabel({
 			top : "5%",
 			left : "60%",
 			width : "40%",
 			color: "black",
 			touchEnabled: false,
-			text : mainViewRows[i]['dateRange']
+			text : mainViewRows[i]['dateRangeFormatted']
 			//text : "11-23"
 		});
 		var location = Ti.UI.createLabel({
@@ -109,7 +110,7 @@ function getTableDataFromMainViewRows(mainViewRows){
 		});
 
 		row.add(name);
-		row.add(dateRange);
+		row.add(dateRangeFormatted);
 		row.add(location);
 		row.add(hours);
 

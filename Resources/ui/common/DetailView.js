@@ -1,6 +1,10 @@
 
 var self = Ti.UI.createView();
 
+var dvService = require("/ui/common/PVService").getService();
+
+var selfDateArray = ["Sun\nMar 6", "Mon\nMar 7", "Tue\nMar 8", "Wed\nMar 9", "Thu\nMar 10", "Fri\nMar 11", "Sat\nMar 12"];
+
 function DetailView() {
 	addPeriodView();
 	self.add(createTimeSheetRowsView());
@@ -17,14 +21,21 @@ function DetailView() {
 	// });
 	// self.add(lbl);
 // 	
-	// self.addEventListener('itemSelected', function(e) {
-		// lbl.text = e.name + '  ' + e.dateRange + "\n" + e.location + '  ' + e.hours;
-// 		
-		// // dateRange:e.rowData.getChildren()[1].getText(),
-			// // location:e.rowData.getChildren()[2].getText(),
-			// // hours:e.rowData.getChildren()[3].getText()
-// 		
-	// });
+	self.addEventListener('itemSelected', function(e) {
+
+		for (var i = self.children.length - 1; i >= 0; i--) {
+			self.remove(self.children[i]);
+		}
+
+		
+		Titanium.API.log("----dv----e.dateRange--->" + e.dateRange); 
+		selfDateArray = dvService.convertDateRangeToDateTextArray(e.dateRange)
+		Titanium.API.log("-----selfDateArray--->" + selfDateArray); 
+		addPeriodView();
+	
+
+		
+	});
 	
 	//drawUI();
 	
@@ -180,16 +191,15 @@ function createTimeSheetRowsView(){
 
 
 function addPeriodView() {
-	var dateArray = ["Sun\nMar 6", "Mon\nMar 7", "Tue\nMar 8", "Wed\nMar 9", "Thu\nMar 10", "Fri\nMar 11", "Sat\nMar 12"];
-	dateArray.push("\nApproved");
+	selfDateArray.push("\nApproved");
 
-	for (var i = 0, iLength = dateArray.length; i < iLength; i++) {
+	for (var i = 0, iLength = selfDateArray.length; i < iLength; i++) {
 		var dateView = Ti.UI.createLabel({
 			top : "4%",
 			left : 6 + 11 * i + "%",
 			color : "black",
 			font : {fontSize : 17},
-			text : dateArray[i]
+			text : selfDateArray[i]
 		});
 		self.add(dateView);
 	}
@@ -200,7 +210,7 @@ function addPeriodView() {
 // function drawUI() {
 	// // Create the first TableViewSection
 	// var section1 = Ti.UI.createTableViewSection({
-		// headerTitle : dateArray.join("   ")
+		// headerTitle : selfDateArray.join("   ")
 	// });
 	// // use a loop to add some rows
 	// // for (var i = 0; i < 4; i++) {

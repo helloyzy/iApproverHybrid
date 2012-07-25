@@ -1,4 +1,5 @@
 
+Ti.include(Titanium.Filesystem.resourcesDirectory+'ui/common/DateFormatter.js');
 
 var pvService = new Object();
 exports.getService =function(){
@@ -39,12 +40,69 @@ pvService.dateRangeOfApproval = function(approval, doc) {
 		var theTimeReports = timeReports.item(i);
 		var theReportIdentity = theTimeReports.getAttribute("identity");
 		if (theReportIdentity == aaprovalReportIdentity) {
-			var fromDate = theTimeReports.getAttribute("fromDate");
-			var toDate = theTimeReports.getAttribute("toDate");
-			return formatStrDate(fromDate) + " - " + formatStrDate(toDate);
+			return {
+				"fromDate" : theTimeReports.getAttribute("fromDate"),
+				"toDate" : theTimeReports.getAttribute("toDate")
+			}
 		}
 	}
 	return "";
+}
+
+pvService.dateRangeFormattedOfApproval = function(approval, doc) {
+	var dateRange = pvService.dateRangeOfApproval(approval, doc);
+	return pvService.formatDateRange(dateRange);
+}
+
+pvService.formatDateRange = function(dateRange){
+	if (dateRange != "") {
+		return formatStrDate(dateRange.fromDate) + " - " + formatStrDate(dateRange.toDate);
+	}
+	return "";
+}
+
+pvService.convertDateRangeToDateTextArray = function(dateRange){
+	// return like ["Sun\nMar 6", "Mon\nMar 7", "Tue\nMar 8", "Wed\nMar 9", "Thu\nMar 10", "Fri\nMar 11", "Sat\nMar 12"];
+
+	//dateRange.fromDate is String type firstly
+	var fromDate = pvService.parseStringToDate(dateRange.fromDate);
+	var toDate = pvService.parseStringToDate(dateRange.toDate);
+
+	Titanium.API.log("-----fromDate--->" + fromDate);
+	Titanium.API.log("-----toDate--->" + toDate);
+
+	var fromTime = fromDate.getTime();
+	var toTime = toDate.getTime();
+
+	//Titanium.API.log("-----fromTime--->" + fromTime);
+	//Titanium.API.log("-----toTime--->" + toTime);
+
+	var result = [fromDate.format("ddd\nmmm d")];
+	for (var loopTime = fromTime + 86400000; loopTime < toTime; loopTime += 86400000)//1000*60*60*24
+	{
+		var loopDay = new Date(loopTime);
+		result.push(loopDay.format("ddd\nmmm d"));
+	}
+	result.push(toDate.format("ddd\nmmm d"));
+
+	Titanium.API.log("-----convertDateRangeToDateTextArray--->" + result);
+	return result;
+
+}
+
+pvService.parseStringToDate = function(strDate){
+	//strDate like format 2012-07-08-06:00
+	var temp = strDate.split("-");
+	
+	var year = temp[0];
+	var month = parseInt(temp[1]) - 1;
+	var day = temp[2];
+	
+	var hourMinute = temp[3].split(":");
+	var hour = hourMinute[0], minute = hourMinute[1];
+	var seconds = 0, milliseconds = 0; 
+
+	return new Date(year, month, day, hour, minute, seconds, milliseconds);
 }
 
 
@@ -200,14 +258,14 @@ pvService.isTimeSheetRowValid = function(timeSheetRowIdentity, doc){
 }
 
 pvService.getMainViewSoap = function(){
-	// var username = "vernon.stinebaker";
-	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
-	// var userID = "0_2690_25053";
+	var username = "vernon.stinebaker";
+	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
+	var userID = "0_2690_25053";
 	
 
-	var username =  "rita.chen";
-	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
-	var userID = "0_2820_25053";
+	// var username =  "rita.chen";
+	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
+	// var userID = "0_2820_25053";
 
 	
 	
@@ -276,14 +334,14 @@ pvService.locationCallback = function(){
 
 
 pvService.getLocationSoap = function(){
-		// var username = "vernon.stinebaker";
-	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
-	// var userID = "0_2690_25053";
+		var username = "vernon.stinebaker";
+	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
+	var userID = "0_2690_25053";
 	
 
-	var username =  "rita.chen";
-	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
-	var userID = "0_2820_25053";
+	// var username =  "rita.chen";
+	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
+	// var userID = "0_2820_25053";
 
 	
 	
