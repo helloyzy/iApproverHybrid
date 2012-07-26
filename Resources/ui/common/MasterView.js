@@ -14,13 +14,14 @@ function MasterView() {
 		backgroundColor:'white'
 	});
 	
-	mvService.getTimeReportCallback = mainViewCallback;
+	mvService.masterViewCallback = mainViewCallback;
 	mvService.getLocationMap(mvService.locationCallback);
 		
 	self.add(mvTable);
 	//add behavior
 	mvTable.addEventListener('click', function(e) {
 		self.fireEvent('itemSelected', {
+			selectedApproval : selfMainViewRows[e.index]['approval'],
 			dateRange : selfMainViewRows[e.index]['dateRange']
 		});
 
@@ -34,31 +35,33 @@ function MasterView() {
 
 
 function mainViewCallback(){
-	var doc = this.responseXML.documentElement;
-	Titanium.API.log("-----getTimeReportCallback.responseText--->" + this.responseText);
-
-    selfMainViewRows = [];
-	var approvals = doc.getElementsByTagName("approvals");
-	for (var i = 0; i < approvals.length; i++) {
-		var row = {};
-		var theApproval = approvals.item(i);
-		row['name'] = theApproval.getAttribute("personName");
-		row['hours'] = parseInt(theApproval.getAttribute("detailCount"))/60 + " hours";
-		row['location'] = mvService.locationOfApproval(theApproval, doc);
-		row['dateRange'] = mvService.dateRangeOfApproval(theApproval, doc);
-		row['dateRangeFormatted'] = mvService.formatDateRange(row['dateRange']);
-        selfMainViewRows.push(row);
-	}
-    
-    // for (var i = 0; i < selfMainViewRows.length; i++) {
-		// Titanium.API.log("-----row.name--->" +selfMainViewRows[i]['name']);
-		// Titanium.API.log("-----row.hours--->" +selfMainViewRows[i]['hours']);
-		// Titanium.API.log("-----row.location--->" +selfMainViewRows[i]['location']);
-		// Titanium.API.log("-----row.dateRange--->" +selfMainViewRows[i]['dateRange']);
-		// Titanium.API.log("-----row.dateRangeFormatted--->" +selfMainViewRows[i]['dateRangeFormatted']);
+	// var doc = this.responseXML.documentElement;
+	// Titanium.API.log("-----mainViewCallback.responseText--->" + this.responseText);
+// 
+    // selfMainViewRows = [];
+	// var approvals = doc.getElementsByTagName("approvals");
+	// for (var i = 0; i < approvals.length; i++) {
+		// var row = {};
+		// var theApproval = approvals.item(i);
+		// row['name'] = theApproval.getAttribute("personName");
+		// row['hours'] = parseInt(theApproval.getAttribute("detailCount"))/60 + " hours";
+		// row['location'] = mvService.locationOfApproval(theApproval, doc);
+		// row['dateRange'] = mvService.dateRangeOfApproval(theApproval, doc);
+		// row['dateRangeFormatted'] = mvService.formatDateRange(row['dateRange']);
+        // selfMainViewRows.push(row);
 	// }
+//     
+    // // for (var i = 0; i < selfMainViewRows.length; i++) {
+		// // Titanium.API.log("-----row.name--->" +selfMainViewRows[i]['name']);
+		// // Titanium.API.log("-----row.hours--->" +selfMainViewRows[i]['hours']);
+		// // Titanium.API.log("-----row.location--->" +selfMainViewRows[i]['location']);
+		// // Titanium.API.log("-----row.dateRange--->" +selfMainViewRows[i]['dateRange']);
+		// // Titanium.API.log("-----row.dateRangeFormatted--->" +selfMainViewRows[i]['dateRangeFormatted']);
+	// // }
+    
+	selfMainViewRows = mvService.getMasterViewRowsData()
+	mvTable.setData(getTableDataFromMainViewRows(selfMainViewRows)); 
 
-	mvTable.setData(getTableDataFromMainViewRows(selfMainViewRows));
 	
 }
 
