@@ -1,43 +1,28 @@
-function getUserToken() {
+var _service = require('service/IAService');
+var _get = _service.GET;
+var _post = _service.POST;
+
+function _getUserToken(onload, onerror) {
 	var url = 'https://stlpv1.perficient.com/primavera/web/?urlVer=3&task=flexTimeAndExpense';
-	Ti.API.log(url);
 	var request = Ti.Network.createHTTPClient({
-		onload: function(e) {
-			Ti.API.log(this.responseText);
-		},
-		onerror: function(e) {
-			Ti.API.error(e.error);
-		},
-		timeout:10000
+		onload: onload,
+		onerror: onerror
 	});
-	request.open('GET', url);
-	request.send();
+	_get(request, url, null, null, null);
 }
 
-function verifyUserInfo(username, password) {
+function _verifyUser(username, password, onload, onerror) {
 	var url = 'https://stlpv1.perficient.com/primavera/web'; 
-	// var url = 'https://stlpv1.perficient.com/primavera/web/command/command?'; 
-	// var parameters = 'username=' + username + '&password=' + password;
-	// var encodedParams = Ti.Network.encodeURIComponent(parameters);
-	// var url = url + encodedParams;
-	Ti.API.log(url);
 	var request = Ti.Network.createHTTPClient({
-		onload: function(e) {
-			Ti.API.log(this.responseText);
-		},
-		onerror: function(e) {
-			Ti.API.error(e.error);
-			getUserToken();
-		},
-		timeout:10000
+		onload: onload,
+		onerror: onerror
 	});
-	request.open('POST', url);
-	request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-	
-	// request.send();
-	
-	request.send({
+	// request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+	_post(request, url, {
 		username:username,
 		password:password
-	});
+	}, null, null);
 }
+
+exports.getUserToken = _getUserToken;
+exports.verifyUser = _verifyUser;

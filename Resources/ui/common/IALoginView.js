@@ -1,10 +1,14 @@
 exports.createLoginView = _loginView;
 
-var _strTrim = require('utils').strTrim;
-var _strBetween = require('utils').strBetween;
-var _extend = require('utils').extend;
+var _utils = require('IAUtils');
+var _strTrim = _utils.strTrim;
+var _strBetween = _utils.strBetween;
+var _extend = _utils.extend;
+var _isIOS = _utils.isIOS;
+var _createIndicator = require('ui/common/IAActivityIndicator').createIndicator;
 var userModule = require('model/IAUser');
 var settingsModule = require('model/IASettings');
+var _userService = require('service/IAUserService');
 
 function _loginView() {
 	
@@ -143,12 +147,7 @@ function _loginView() {
 		title: 'Log in'
 	});
 	loginView.add(btn);
-	var activityIndicator = Ti.UI.createActivityIndicator({
-		message: 'Authenticating user...'
-		// style:Ti.UI.iPhone.ActivityIndicatorStyle.DARK,
-		// top: '40%',
-		// left: '40%'
-	});
+	var activityIndicator = _createIndicator('Authenticating user...', loginBgView);
 	
 	// event handling
 	remMeSwitch.addEventListener('change', function(e) {
@@ -163,10 +162,10 @@ function _loginView() {
 		}
 	});
 	
-	function validationFailure() {
+	function validationFailure(errorMsg) {
 		activityIndicator.hide();
 		var errorDialog = Ti.UI.createAlertDialog({
-			message:'Username or password incorrect, please check it!',
+			message: errorMsg ? errorMsg : 'Please check your network connection and try again!',
 			ok: 'OK',
 			title: 'Authentication Failure'
 		});
@@ -174,76 +173,27 @@ function _loginView() {
 	}
 	
 	function validationSuccess() {
-		getUserToken();
-	}
-	
-	function userTokenSuccess(responseStr) {
-		activityIndicator.hide();
-		var userToken = _strBetween(responseStr, 'AuthInfo', '&timeout=');
-		var userId = _strBetween(responseStr, '&userOID=', '&configureExpenses=');
-		Ti.API.log(Ti.Network.decodeURIComponent(userToken));
-		Ti.API.log(userId);
-	}
-	
-	function getUserToken() {
-		var url = 'https://stlpv1.perficient.com/primavera/web/?urlVer=3&task=flexTimeAndExpense';
-		Ti.API.log(url);
-		var request = Ti.Network.createHTTPClient({
-			onload: function(e) {
-				Ti.API.log(this.responseText);
-				userTokenSuccess(this.responseText);
-			},
-			onerror: function(e) {
-				Ti.API.error(e.error);
-				validationFailure();
-			},
-			timeout:10000
-		});
-		request.open('GET', url);
-		request.send();
-	}
-	
-	function verifyUserInfo(username, password) {
-		var url = 'https://stlpv1.perficient.com/primavera/web'; 
-		// var url = 'https://stlpv1.perficient.com/primavera/web/command/command?'; 
-		// var parameters = 'username=' + username + '&password=' + password;
-		// var encodedParams = Ti.Network.encodeURIComponent(parameters);
-		// var url = url + encodedParams;
-		Ti.API.log(url);
-		var request = Ti.Network.createHTTPClient({
-			onload: function(e) {
-				var responseStr = this.responseText;
-				Ti.API.log(responseStr);
-				if (responseStr.indexOf('<title>Not Authenticated</title>') < 0) {
-					validationSuccess();
-				} else {
-					validationFailure();
-				}
-			},
-			onerror: function(e) {
-				Ti.API.error(e.error);
-				if (e.error.indexOf('The request failed because it redirected too many times') >= 0) {
-					validationSuccess();
-				} else {
-					validationFailure();
-				}
-			},
-			timeout:10000
-		});
-		request.open('POST', url);
-		request.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-		
-		// request.send();
-		
-		request.send({
-			username:username,
-			password:password
-		});
+		var _userToken_onload = function(e) {
+			activityIndicator.hide();
+			var responseStr = e.source.responseText;
+			var userToken = Ti.Network.decodeURIComponent(_strBetween(responseStr, 'AuthInfo', '&timeout='));
+			var userId = _strBetween(responseStr, '&userOID=', '&configureExpenses=');
+			userModule.setUserInfo({
+			    username:_strTrim(txtUsername.value),
+			    password:remMeSwitch.value ? _strTrim(txtPwd.value) : '',
+			    userId:userId,
+			    token:userToken
+			});
+		};
+		var _userToken_onerror = function(e) {
+			validationFailure();
+		}
+		_userService.getUserToken(_userToken_onload, _userToken_onerror);
 	}
 	
 	btn.addEventListener('click', function(e) {	
-	    var username = _strTrim(txtUsername.value);
-	    var password = _strTrim(txtPwd.value);
+	    var username = txtUsername.value.trim();
+	    var password = txtPwd.value.trim();
 		if (!username) {
 			alert('Please input your user name!');
 			txtUsername.focus();
@@ -253,22 +203,31 @@ function _loginView() {
 			txtPwd.focus();
 			return;
 		}
-		//TODO verify username and password against Primavera
-		// alert(_strBetween('hellommmworhelld', 'lo', 'hel'));
-		// alert(_strBetween('fejifjeifjei', 'jif', 'jei'));
 		activityIndicator.show();
-		verifyUserInfo(username, password);
-		userModule.setUserInfo({
-		    username:username,
-		    password:remMeSwitch.value ? password : ''
-		});
-	})
-	
+		var _verifyUser_onload = function(e) {
+			var responseStr = e.source.responseText;
+			if (responseStr.indexOf('<title>Not Authenticated</title>') < 0) {
+				validationSuccess();
+			} else {
+				validationFailure('Username or password incorrect, please check it!');
+			}
+		};
+		var _verifyUser_onerror = function(e) {
+			if (e.error.indexOf('The request failed because it redirected too many times') >= 0) {
+				validationSuccess();
+			} else {
+				validationFailure();
+			}
+		};
+		_userService.verifyUser(username, password, _verifyUser_onload, _verifyUser_onerror);
+	});
 	
 	loginBgView.add(loginView);	
-	if (Ti.Platform.osname == 'iphone' || Ti.Platform.osname == 'ipad') {
+	/**
+	if (_isIOS()) {
 		loginBgView.add(activityIndicator);
 	}	
+	*/
 	return loginBgView;
 }
 

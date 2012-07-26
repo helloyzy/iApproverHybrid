@@ -1,20 +1,34 @@
-var IAUser = {};
+var IAUser = new Object();
+var IAUser_volatileProps = {
+	token : true,
+	userId : true
+};
 
-var _extend = require('utils').extend;
+function _isVolatileProp(prop) {
+	return IAUser_volatileProps[prop];
+}
 
 function _readUserInfo() {
-    IAUser.username = Ti.App.Properties.getString('username', '');
-    IAUser.password = Ti.App.Properties.getString('password', '');
+    for (var prop in IAUser) {
+    	IAUser[prop] = Ti.App.Properties.getString(prop, '');
+    }
 }
 
 function _writeUserInfo() {
-    Ti.App.Properties.setString('username', IAUser.username);
-    Ti.App.Properties.setString('password', IAUser.password);
+    for (var prop in IAUser) {
+   		if (!_isVolatileProp(prop)) {
+    		Ti.App.Properties.setString(prop, IAUser[prop]);
+    	}
+    }
 }
 
 exports.init = function() {
+	IAUser.username = '';
+	IAUser.password = '';
+	// read properties from local file system
     _readUserInfo();
     IAUser.token = '';
+    IAUser.userId = '';
 }
 
 /**
@@ -22,12 +36,10 @@ exports.init = function() {
  * @param {Object} user
  */
 exports.setUserInfo = function(user) {
-    _extend(user, IAUser);
+    IAUser.extend(user);
     _writeUserInfo();
 }
 
 exports.userInfo = function() {
-    var result = {};
-    _extend(IAUser, result);
-    return result;
+    return IAUser.clone();
 }
