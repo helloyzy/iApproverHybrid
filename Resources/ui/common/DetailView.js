@@ -1,10 +1,17 @@
 
 var self = Ti.UI.createView();
 
+var dvService = require("/ui/common/PVService").getService();
+
+var selfDateArray = null; //["Sun\nMar 6", "Mon\nMar 7", "Tue\nMar 8", "Wed\nMar 9", "Thu\nMar 10", "Fri\nMar 11", "Sat\nMar 12"];
+
+var selfDateHourMapArray = null; // [{"Mon\nJul 16" : "8.00"}, {	"Tue\nJul 17" : "8.00"}];
+
+
 function DetailView() {
-	addPeriodView();
-	self.add(createTimeSheetRowsView());
-	self.add(createRowDetailView());
+	// addPeriodView();
+	// self.add(createTimeSheetRowsView());
+	// self.add(createRowDetailView());
 	// Titanium.API.log("-----createTimeSheetRowsView--->" );
 	//self.add([dvTable]);
 	//self.add();
@@ -17,23 +24,36 @@ function DetailView() {
 	// });
 	// self.add(lbl);
 // 	
-	// self.addEventListener('itemSelected', function(e) {
-		// lbl.text = e.name + '  ' + e.dateRange + "\n" + e.location + '  ' + e.hours;
-// 		
-		// // dateRange:e.rowData.getChildren()[1].getText(),
-			// // location:e.rowData.getChildren()[2].getText(),
-			// // hours:e.rowData.getChildren()[3].getText()
-// 		
-	// });
+	self.addEventListener('itemSelected', function(e) {
+		for (var i = self.children.length - 1; i >= 0; i--) {
+			self.remove(self.children[i]);
+		}
+		
+		//Titanium.API.log("----dv----e.dateRange--->" + e.dateRange); 
+		selfDateArray = dvService.convertDateRangeToDateTextArray(e.dateRange)
+		//Titanium.API.log("-----selfDateArray--->" + selfDateArray); 
+		addPeriodView();
+		
+	    
+	    dvService.afterWrapingDetailViewData = detailViewCallBack;
+	    dvService.getDetailViewData(e.selectedApproval);
+		
+	});
 	
 	//drawUI();
 	
 	return self;
 };
 
+function detailViewCallBack() {
+	selfDateHourMapArray = dvService.getDateHourMapArray();
+	self.add(createTimeSheetRowsView());
+}
+
+
 function createRowDetailView(){
 	var result = Ti.UI.createTableView({
-		top : "25%",
+		top : 25 + (selfDateHourMapArray.length-1)*10 + "%",
 		left : "3%",
 		width : "94%",
 		height : 60 * 4,
@@ -122,74 +142,78 @@ var rowDetailMap = {
 }
 
 function createTimeSheetRowsView(){
-
 	var result = Ti.UI.createTableView({
 		top : "12%",
 		left : "3%",
 		width : "94%",
-		height : 60,
+		height : 60 * selfDateHourMapArray.length,
 		borderWidth : 1,
 		borderRadius : 10,
 		borderColor : "black",
-		allowsSelection:true
-	}); 
-
-	var rowsData = [];
-
-	var row = Ti.UI.createTableViewRow({
-		height : 60 
+		allowsSelection : true
 	});
-	
-	for (var i = 1; i < 8; i++) {
-		if (i === 7) {
-			var approvalSwitch = Titanium.UI.createSwitch({
-				left : 3.2 + 11.8 * i + "%",
-				value : true
-			});
-			if (Ti.Platform.osname === "android") {
-				approvalSwitch.style = Titanium.UI.Android.SWITCH_STYLE_CHECKBOX;
-			}
-			// approvalSwitch.addEventListener('change', function(e) {
-				// Titanium.API.info('Basic Switch value = ' + e.value);
-			// });
-			row.add(approvalSwitch);
-		} else {
-			var hourLabel = Ti.UI.createLabel({
-				left : 3.2 + 11.8 * i + "%",
-				color : "black",
-		    	touchEnabled: false,
-				font : {
-					fontSize : 17
-				},
-				text : "8.00"
-			});
-			row.add(hourLabel);
-		}
-	}
 
-
-
-	
-	
-	rowsData.push(row);
-	result.setData(rowsData);
+	result.setData(createHourRowsData());
 	return result;
-
 
 }
 
+function createHourRowsData(){
+	var rowsData = []; 
+
+    var rowNum = selfDateHourMapArray.length;
+    Titanium.API.log("-----selfDateHourMapArray--->" + selfDateHourMapArray);
+	
+	for (var rowIndex = 0; rowIndex < rowNum; rowIndex++) {
+		var row = Ti.UI.createTableViewRow({
+			height : 60
+		}); 
+
+		var dateHourMap = selfDateHourMapArray[rowIndex];
+		for (var dateIndex = 0, dLength = selfDateArray.length; dateIndex < dLength; dateIndex++) {
+			var dateText = selfDateArray[dateIndex];
+			var hourText = dateHourMap[dateText];
+			if (hourText != undefined) {
+				var hourLabel = Ti.UI.createLabel({
+					left : 3.2 + 11.8 * dateIndex + "%",
+					color : "black",
+					touchEnabled : false,
+					font : {
+						fontSize : 17
+					},
+					text : hourText
+				});
+				row.add(hourLabel);
+			}
+		}
+
+		var approvalSwitch = Titanium.UI.createSwitch({
+			left : 3.2 + 11.8 * selfDateArray.length + "%",
+			value : true
+		});
+		if (Ti.Platform.osname === "android") {
+			approvalSwitch.style = Titanium.UI.Android.SWITCH_STYLE_CHECKBOX;
+		}
+		// approvalSwitch.addEventListener('change', function(e) {
+		// Titanium.API.info('Basic Switch value = ' + e.value);
+		// });
+		row.add(approvalSwitch); 
+		rowsData.push(row);
+			
+	}
+    return rowsData;
+}
 
 function addPeriodView() {
-	var dateArray = ["Sun\nMar 6", "Mon\nMar 7", "Tue\nMar 8", "Wed\nMar 9", "Thu\nMar 10", "Fri\nMar 11", "Sat\nMar 12"];
-	dateArray.push("\nApproved");
-
-	for (var i = 0, iLength = dateArray.length; i < iLength; i++) {
+	//selfDateArray.push("\nApproved");
+	for (var i = 0, iLength = selfDateArray.length; i <= iLength; i++) {
 		var dateView = Ti.UI.createLabel({
 			top : "4%",
 			left : 6 + 11 * i + "%",
 			color : "black",
 			font : {fontSize : 17},
-			text : dateArray[i]
+			text : i !== iLength ? selfDateArray[i] : "\nApproved"
+
 		});
 		self.add(dateView);
 	}
@@ -200,7 +224,7 @@ function addPeriodView() {
 // function drawUI() {
 	// // Create the first TableViewSection
 	// var section1 = Ti.UI.createTableViewSection({
-		// headerTitle : dateArray.join("   ")
+		// headerTitle : selfDateArray.join("   ")
 	// });
 	// // use a loop to add some rows
 	// // for (var i = 0; i < 4; i++) {

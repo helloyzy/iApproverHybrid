@@ -44,5 +44,13 @@ if (Ti.version < 1.8 ) {
 			Window = require('ui/handheld/android/ApplicationWindow');
 		}
 	}
-	new Window().open();
+
+	var theWindow = new Window();
+	theWindow.open();
+
+	if (isTablet) {
+		theWindow.orientationModes = [Titanium.UI.LANDSCAPE_RIGHT, Titanium.UI.LANDSCAPE_LEFT]
+	}
+
+
 })();
