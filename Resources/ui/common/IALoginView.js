@@ -1,13 +1,6 @@
-exports.createLoginView = _loginView;
-
-var _utils = require('IAUtils');
-var _strTrim = _utils.strTrim;
-var _strBetween = _utils.strBetween;
-var _extend = _utils.extend;
-var _isIOS = _utils.isIOS;
 var _createIndicator = require('ui/common/IAActivityIndicator').createIndicator;
-var userModule = require('model/IAUser');
-var settingsModule = require('model/IASettings');
+var _userModule = require('model/IAUser');
+var _settingsModule = require('model/IASettings');
 var _userService = require('service/IAUserService');
 
 function _loginView() {
@@ -68,7 +61,7 @@ function _loginView() {
 			color:'gray',
 			font:{fontWeight:'bold', fontSize:_fontSize(18)}
 		});		
-		_extend(props, lbl); // add customized props 
+		extend(props, lbl); // add customized props 
 		return lbl;
 	};
 	
@@ -83,16 +76,16 @@ function _loginView() {
 			clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ONBLUR,
 			borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
 		});
-		_extend(props, text); // add customized props
+		extend(props, text); // add customized props
 		return text;
 	};
 	
 	
-	userModule.init();
-	settingsModule.init();
+	_userModule.init();
+	_settingsModule.init();
 	
-	var user = userModule.userInfo();
-	var isRemMe = settingsModule.settingsInfo().isRememberMe;
+	var user = _userModule.userInfo();
+	var isRemMe = _settingsModule.settingsInfo().isRememberMe;
 	
 	loginView.add(_label('Log in', {
 		color: 'black',
@@ -152,11 +145,11 @@ function _loginView() {
 	// event handling
 	remMeSwitch.addEventListener('change', function(e) {
 		var isRemMe = e.source.value; // e.source --> switch control
-		settingsModule.setSettingsInfo({
+		_settingsModule.setSettingsInfo({
 		    isRememberMe:isRemMe
 		});
 		if (!isRemMe) { // clear password in the properties
-			userModule.setUserInfo({
+			_userModule.setUserInfo({
 			    password:''
 			});
 		}
@@ -176,11 +169,11 @@ function _loginView() {
 		var _userToken_onload = function(e) {
 			activityIndicator.hide();
 			var responseStr = e.source.responseText;
-			var userToken = Ti.Network.decodeURIComponent(_strBetween(responseStr, 'AuthInfo', '&timeout='));
-			var userId = _strBetween(responseStr, '&userOID=', '&configureExpenses=');
-			userModule.setUserInfo({
-			    username:_strTrim(txtUsername.value),
-			    password:remMeSwitch.value ? _strTrim(txtPwd.value) : '',
+			var userToken = Ti.Network.decodeURIComponent(responseStr.between('AuthInfo', '&timeout='));
+			var userId = responseStr.between('&userOID=', '&configureExpenses=');
+			_userModule.setUserInfo({
+			    username:txtUsername.value.trim(),
+			    password:remMeSwitch.value ? txtPwd.value.trim() : '',
 			    userId:userId,
 			    token:userToken
 			});
@@ -223,11 +216,7 @@ function _loginView() {
 	});
 	
 	loginBgView.add(loginView);	
-	/**
-	if (_isIOS()) {
-		loginBgView.add(activityIndicator);
-	}	
-	*/
 	return loginBgView;
 }
 
+exports.createLoginView = _loginView;

@@ -1,4 +1,4 @@
-var IAUser = new Object();
+var IAUser = {};
 var IAUser_volatileProps = {
 	token : true,
 	userId : true
@@ -36,10 +36,10 @@ exports.init = function() {
  * @param {Object} user
  */
 exports.setUserInfo = function(user) {
-    IAUser.extend(user);
+    extend(user, IAUser);
     _writeUserInfo();
 }
 
 exports.userInfo = function() {
-    return IAUser.clone();
+    return clone(IAUser);
 }

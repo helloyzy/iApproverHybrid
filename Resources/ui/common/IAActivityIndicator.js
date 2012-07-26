@@ -1,4 +1,3 @@
-var _isIOS = require('IAUtils').isIOS;
 
 function Indicator_IOS(message, pView) {
 	
@@ -76,7 +75,7 @@ function _createIndicator_android(message) {
  * @param {Object} pView - ios only, the parent view which the indicator should be added to
  */
 function _createIndicator(message, pView) {
-	if (_isIOS()) {
+	if (isIOS()) {
 		return _createIndicator_ios(message, pView);
 	} else {
 		return _createIndicator_android(message);
