@@ -9,6 +9,8 @@ var _userModule = require('model/IAUser');
 var _settingsModule = require('model/IASettings');
 var _userService = require('service/IAUserService');
 
+var _pvService = require("/ui/common/PVService").getService();
+
 function _controlHeight(androidHeight, iOSHeight, otherHeight) {
 	if (_isAndroid()) {
 		return androidHeight;
@@ -236,7 +238,7 @@ function fetchReportWithUserInfo(userInfo) {
 
      //alert("ok")
 
-	require("/ui/common/PVService").getService().setUserInfo(userInfo);
+	_pvService.setUserInfo(userInfo);
 	openReportWindow();
 
 }
@@ -273,6 +275,8 @@ function openReportWindow(){
 	}
 
 	var theWindow = new Window();
+	_pvService.indicator =_createIndicator('Loading...', theWindow);
+	_pvService.showIndicator();
 	theWindow.open();
 
 	if (isTablet) {

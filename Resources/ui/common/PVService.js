@@ -6,11 +6,11 @@ exports.getService =function(){
 	return pvService;
 }
 
+
 pvService.userInfo = null;
 pvService.setUserInfo = function(newUserInfo) {
 	pvService.userInfo = newUserInfo;
 }
-
 
 pvService.getUserInfo = function(newUserInfo) {
 	var username = "vernon.stinebaker";
@@ -27,7 +27,6 @@ pvService.getUserInfo = function(newUserInfo) {
 
 	return pvService.userInfo;
 }
-
 
 
 
@@ -105,6 +104,7 @@ pvService.getDetailViewDataCallBack = function(){
 	initRowsDetailWithDoc(doc);
 
 	pvService.afterWrapingDetailViewData();
+	pvService.hideIndicator();
 }
 
 pvService.getRowsDetail = function(){
@@ -333,6 +333,8 @@ pvService.getTimeReportCallback = function() {
 	pvService.masterViewResponseDoc = this.responseXML.documentElement;
     initMasterViewRowsDataWithDoc(pvService.masterViewResponseDoc);
     pvService.masterViewCallback();
+    
+    pvService.hideIndicator();
 }
 
 pvService.masterViewCallback = function() {
@@ -651,6 +653,8 @@ pvService.afterGetLocation = function(){
 
 //---------------------------------------------------below is service post code----------------------------------------------------------------------------------
 pvService.postSoap = function(action, soap, callback){
+	pvService.showIndicator();
+	
 	var client = Ti.Network.createHTTPClient();
 	client.onload = callback;
 
@@ -660,6 +664,23 @@ pvService.postSoap = function(action, soap, callback){
 
 	client.send(soap);
 }
+
+//---------------------------------------------------below is indicator code----------------------------------------------------------------------------------
+
+pvService.showIndicator = function() {
+	if (pvService.indicator !== undefined && pvService.isShowingIndicator !== true) {
+		pvService.isShowingIndicator = true;
+		pvService.indicator.show();
+	}
+}
+
+pvService.hideIndicator = function() {
+	if (pvService.indicator !== undefined && pvService.isShowingIndicator === true) {
+		pvService.isShowingIndicator = false;
+		pvService.indicator.hide();
+	}
+}
+
 
 //---------------------------------------------------below is fetch location code----------------------------------------------------------------------------------
 pvService.locationCallback = function(){
@@ -674,6 +695,7 @@ pvService.locationCallback = function(){
 		Titanium.API.log("test locationMap[0_431_25571] is NonTravel?-->" + locationMap["0_431_25571"]);
 		
 		pvService.locationIdentyToName = locationMap;
+		
 		pvService.afterGetLocation();
 }
 
