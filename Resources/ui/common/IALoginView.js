@@ -1,3 +1,7 @@
+var _utils = require('IAUtils');
+var _extend = _utils.extend;
+var _strTrim = _utils.strTrim;
+var _strBetween = _utils.strBetween;
 var _createIndicator = require('ui/common/IAActivityIndicator').createIndicator;
 var _userModule = require('model/IAUser');
 var _settingsModule = require('model/IASettings');
@@ -61,7 +65,7 @@ function _loginView() {
 			color:'gray',
 			font:{fontWeight:'bold', fontSize:_fontSize(18)}
 		});		
-		extend(props, lbl); // add customized props 
+		_extend(props, lbl); // add customized props 
 		return lbl;
 	};
 	
@@ -76,13 +80,12 @@ function _loginView() {
 			clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ONBLUR,
 			borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
 		});
-		extend(props, text); // add customized props
+		_extend(props, text); // add customized props
 		return text;
 	};
 	
 	
 	_userModule.init();
-	_settingsModule.init();
 	
 	var user = _userModule.userInfo();
 	var isRemMe = _settingsModule.settingsInfo().isRememberMe;
@@ -169,11 +172,11 @@ function _loginView() {
 		var _userToken_onload = function(e) {
 			activityIndicator.hide();
 			var responseStr = e.source.responseText;
-			var userToken = Ti.Network.decodeURIComponent(responseStr.between('AuthInfo', '&timeout='));
-			var userId = responseStr.between('&userOID=', '&configureExpenses=');
+			var userToken = Ti.Network.decodeURIComponent(_strBetween(responseStr,'AuthInfo', '&timeout='));
+			var userId = _strBetween(responseStr, '&userOID=', '&configureExpenses=');
 			_userModule.setUserInfo({
-			    username:txtUsername.value.trim(),
-			    password:remMeSwitch.value ? txtPwd.value.trim() : '',
+			    username:_strTrim(txtUsername.value),
+			    password:remMeSwitch.value ? _strTrim(txtPwd.value) : '',
 			    userId:userId,
 			    token:userToken
 			});
@@ -185,8 +188,8 @@ function _loginView() {
 	}
 	
 	btn.addEventListener('click', function(e) {	
-	    var username = txtUsername.value.trim();
-	    var password = txtPwd.value.trim();
+	    var username = _strTrim(txtUsername.value);
+	    var password = _strTrim(txtPwd.value);
 		if (!username) {
 			alert('Please input your user name!');
 			txtUsername.focus();

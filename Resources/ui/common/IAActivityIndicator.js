@@ -1,3 +1,4 @@
+var _isIOS = require('IAUtils').isIOS;
 
 function Indicator_IOS(message, pView) {
 	
@@ -46,16 +47,13 @@ function Indicator_IOS(message, pView) {
 }
 
 Indicator_IOS.prototype.show = function() {
-	if (this._pView) {
-		// add to the parent view for the first time show
-		this._pView.add(this._view);
-		this._pView = null; // remove reference to avoid mutual reference
-	}
+	this._pView.add(this._view);
 	this._view.show();
 }
 
 Indicator_IOS.prototype.hide = function() {
 	this._view.hide();
+	this._pView.remove(this._view);
 }
 
 function _createIndicator_ios(message, pView) {
@@ -75,7 +73,7 @@ function _createIndicator_android(message) {
  * @param {Object} pView - ios only, the parent view which the indicator should be added to
  */
 function _createIndicator(message, pView) {
-	if (isIOS()) {
+	if (_isIOS()) {
 		return _createIndicator_ios(message, pView);
 	} else {
 		return _createIndicator_android(message);

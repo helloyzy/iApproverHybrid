@@ -1,3 +1,7 @@
+var _utils = require('IAUtils');
+var _extend = _utils.extend;
+var _clone = _utils.clone;
+
 var IAUser = {};
 var IAUser_volatileProps = {
 	token : true,
@@ -36,10 +40,10 @@ exports.init = function() {
  * @param {Object} user
  */
 exports.setUserInfo = function(user) {
-    extend(user, IAUser);
+    _extend(user, IAUser);
     _writeUserInfo();
 }
 
 exports.userInfo = function() {
-    return clone(IAUser);
+    return _clone(IAUser);
 }

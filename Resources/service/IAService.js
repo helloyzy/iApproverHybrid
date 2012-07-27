@@ -1,3 +1,4 @@
+var _bind = require('IAUtils').bind;
 
 var IAService = {
 	settings: {
@@ -21,7 +22,7 @@ IAServiceStub.prototype.isTimeout = function() {
 }
 
 IAServiceStub.prototype.decorateWithTimeout = function(callback) {
-	return bind(this, function(e) {
+	return _bind(this, function(e) {
 		if (e.error) {  // log error message if it has any
 			Ti.API.error(e.error);
 		}
@@ -49,7 +50,7 @@ IAServiceStub.prototype.send = function(request, url, action, params, httpHeadPa
 	}
 	params ? request.send(params) : request.send();
 	
-	this._timeoutid = setTimeout(bind(this, function(){
+	this._timeoutid = setTimeout(_bind(this, function(){
 		this._timeout_status = IAService.consts.TIMEOUT_TRIGGERED;
 		this._onerror({
 			error:'[IAService timeout callback] Request time out.'

@@ -3,6 +3,9 @@
  *      isRememberMe: boolean, configs whether to remember password for the login
  */
 
+var _utils = require('IAUtils');
+var _extend = _utils.extend;
+
 var IASettings = {};
 
 function _readSettings() {
@@ -13,17 +16,12 @@ function _writeSettings() {
 	Ti.App.Properties.setBool('isRememberMe', IASettings.isRememberMe);
 }
 
-exports.init = function () {
-    _readSettings();
-}
-
 exports.setSettingsInfo = function(settings) {
-    // IASettings.extend(settings);
-    extend(settings, IASettings);
+    _extend(settings, IASettings);
     _writeSettings();
 }
 
 exports.settingsInfo = function() {
-    // return IASettings.clone();
-    return clone(IASettings);
+	_readSettings();
+    return IASettings;
 }
