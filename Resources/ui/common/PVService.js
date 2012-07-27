@@ -6,6 +6,31 @@ exports.getService =function(){
 	return pvService;
 }
 
+pvService.userInfo = null;
+pvService.setUserInfo = function(newUserInfo) {
+	pvService.userInfo = newUserInfo;
+}
+
+
+pvService.getUserInfo = function(newUserInfo) {
+	var username = "vernon.stinebaker";
+	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
+	var userID = "0_2690_25053";
+
+	// var username = "rita.chen";
+	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
+	// var userID = "0_2820_25053";
+
+	pvService.userInfo.username = username;
+	pvService.userInfo.token = token;
+	pvService.userInfo.userID = userID;
+
+	return pvService.userInfo;
+}
+
+
+
+
 pvService.locationIdentyToName = null;
 pvService.masterViewRowsData = null;
 pvService.masterViewResponseDoc = null;
@@ -16,19 +41,15 @@ var detailXml = null;
 //---------------------------------------------------below is getTimeSheetRowsDetail code----------------------------------------------------------------------------------
 
 pvService.getDetailViewSoap = function(approval){
-    // var username = "vernon.stinebaker";
-	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
-	// var userID = "0_2690_25053";
-	
 
-	var username =  "rita.chen";
-	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
-	var userID = "0_2820_25053";
-
+	var userInfo = pvService.getUserInfo();
+	var username = userInfo.username;
+	var token = userInfo.token;
+	var userID = userInfo.userID;
 
 	var approvalIdentity = approval.getAttribute("identity");
 	var aaprovalReportIdentity = pvService.approvalIdentityToReportIdentity(pvService.masterViewResponseDoc)[approvalIdentity];
-	var approvalUserRefOid = approval.getElementsByTagName("userRef").item(0).getAttribute("oid");
+	var approvalUserRefOid = approval.getElementsByTagName("userRef").item(0).getAttribute("oid"); 
 
 
 	var s='';
@@ -115,7 +136,7 @@ function initRowsDetailWithDoc(doc){
 			"Type:" : transactionTypesOfDoc(doc)[row.transactionTypeRef].name,
 			"Location:" : pvService.locationIdentityToLocationName()[row.locationRef],
 			"Project/Org.:" : projectsOfDoc(doc)[row.projectRef].name,
-			"Non-billable:" : row.billable === "false" ? "False" : "True",
+			"Non-billable:" : row.billable === "false" ? "True" : "False",
 
 			"Project Task:" : tasksOfDoc(doc)[row.taskRef].name,
 			"Client:" : clientsOfDoc(doc)[rowProjectClientRef].name,
@@ -588,16 +609,10 @@ pvService.isTimeSheetRowValid = function(timeSheetRowIdentity, doc){
 }
 
 pvService.getMainViewSoap = function(){
-	// var username = "vernon.stinebaker";
-	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
-	// var userID = "0_2690_25053";
-	
-
-	var username =  "rita.chen";
-	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
-	var userID = "0_2820_25053";
-
-	
+    var userInfo =pvService.getUserInfo();
+	var username =  userInfo.username;
+	var token = userInfo.token;
+	var userID = userInfo.userID;
 	
 	
 	var result='';
@@ -664,42 +679,34 @@ pvService.locationCallback = function(){
 
 
 pvService.getLocationSoap = function(){
-		// var username = "vernon.stinebaker";
-	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
-	// var userID = "0_2690_25053";
-	
 
-	var username =  "rita.chen";
-	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
-	var userID = "0_2820_25053";
+	var userInfo = pvService.getUserInfo();
+	var username = userInfo.username;
+	var token = userInfo.token;
+	var userID = userInfo.userID;
 
-	
-	
-	
-	  var s='';
-    
-      s+="<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-                                s+="<SOAP-ENV:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
-                                s+="<SOAP-ENV:Body>"
-                                s+="<cmd:projectionRequest version=\"9.0sp1b, Build 09\" username=\""
-                                
-                                //service.username
-                                s+=username
-                                
-                                s+="\"  "
-                                s+="password=\""
-                                
-                                //service.token
-                                s+=token
-                                
-                                s+="\" " 
-                                s+="xsi:type=\"ns1:ProjectionRequest\" includeInactive=\"true\" xmlns:cmd=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\" xmlns:oper=\"http://primavera.com/schemas/pvapi/PVOperational.xsd\" xmlns:ns1=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\">"
-                                s+="<locationProjection xsi:type=\"ns2:LocationProjectionSpecification\" xmlns:ns2=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\"/>"                  
-                                s+="</cmd:projectionRequest>"
-                                s+="</SOAP-ENV:Body>"
-                                s+="</SOAP-ENV:Envelope>"
-                                                         
-      return s
+	var s = '';
+
+	s += "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+	s += "<SOAP-ENV:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
+	s += "<SOAP-ENV:Body>"
+	s += "<cmd:projectionRequest version=\"9.0sp1b, Build 09\" username=\""
+
+	s += username
+
+	s += "\"  "
+	s += "password=\""
+
+	s += token
+
+	s += "\" "
+	s += "xsi:type=\"ns1:ProjectionRequest\" includeInactive=\"true\" xmlns:cmd=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\" xmlns:oper=\"http://primavera.com/schemas/pvapi/PVOperational.xsd\" xmlns:ns1=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\">"
+	s += "<locationProjection xsi:type=\"ns2:LocationProjectionSpecification\" xmlns:ns2=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\"/>"
+	s += "</cmd:projectionRequest>"
+	s += "</SOAP-ENV:Body>"
+	s += "</SOAP-ENV:Envelope>"
+
+	return s
 	
 }
 
