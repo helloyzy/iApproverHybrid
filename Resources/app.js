@@ -1,3 +1,36 @@
+// this sets the background color of the master UIView (when there are no windows/tab groups on it)
+Titanium.UI.setBackgroundColor('#000');
+
+/**
+require('require_patch').monkeypatch(this);
+var _utils = require('IAUtils');
+
+String.prototype.trim = function() {
+    return _utils.strTrim(this);
+};
+String.prototype.between = function(left, right) {
+    return _utils.strBetween(this, left, right);
+};
+
+Function.prototype.bind = function(obj) {
+    return function() {
+        return this.apply(obj, arguments);
+    };
+};
+
+// add global functions
+this.clone = _utils.clone;
+this.extend = _utils.extend;
+this.isIOS = _utils.isIOS;
+this.bind = _utils.bind; // equals to Function.prototype.bind
+*/
+
+var _createLoginView = require('ui/common/IALoginView').createLoginView;
+
+var mainWindow = Titanium.UI.createWindow();
+mainWindow.add(_createLoginView());
+mainWindow.open();
+
 /*
 * A master detail view, utilizing a native table view component and platform-specific UI and navigation. 
 * A starting point for a navigation-based application with hierarchical data, or a stack of windows. 
@@ -10,6 +43,7 @@
 *  
 */
 
+/**
 //bootstrap and check dependencies
 if (Ti.version < 1.8 ) {
 	alert('Sorry - this application template requires Titanium Mobile SDK 1.8 or later');	  	
@@ -54,3 +88,4 @@ if (Ti.version < 1.8 ) {
 
 
 })();
+*/

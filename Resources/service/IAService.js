@@ -1,3 +1,5 @@
+var _bind = require('IAUtils').bind;
+
 var IAService = {
 	settings: {
 		timeout:15000, // timeout setting used in the httpclient
@@ -9,26 +11,10 @@ var IAService = {
 	}
 };
 
-function IAServiceStub (request, url, action, params) {
-	request.timeout = IAService.settings.timeout;
+function IAServiceStub() {
 	// setup timeout
 	this._timeout_status = IAService.consts.TIMEOUT_INIT;
 	this._timeoutid = -1;
-	
-	this._onload = request.onload;
-	this._onerror = request.onerror;
-	request.onload = this.decorateWithTimeout(this._onload);
-	request.onerror = this.decorateWithTimeout(this._onerror);
-	if (action == 'POST') {
-		request.setRequestHeader('Content-Type','application/x-www-form-urlencoded')
-	}
-	request.open(action, url);
-	params ? request.send(params) : request.send();
-	//TODO this in timeout refers to ??
-	this._timeoutid = setTimeout(IAService.settings.timeoutCheck, function(){
-		this._onerror();
-		this._timeout_status = IAService.consts.TIMEOUT_TRIGGERED;
-	});
 }
 
 IAServiceStub.prototype.isTimeout = function() {
@@ -36,46 +22,55 @@ IAServiceStub.prototype.isTimeout = function() {
 }
 
 IAServiceStub.prototype.decorateWithTimeout = function(callback) {
-	return function(e) {
+	return _bind(this, function(e) {
+		if (e.error) {  // log error message if it has any
+			Ti.API.error(e.error);
+		}
 		if (!this.isTimeout()) {
 			clearTimeout(this._timeoutid);
 			callback(e);
 		}
-	};
+	});
 }
 
-IAService.GET = function(request, url) {
+IAServiceStub.prototype.send = function(request, url, action, params, httpHeadParams) {
 	request.timeout = IAService.settings.timeout;
-	var _timeout_status = IAService.consts.TIMEOUT_INIT;
-	var _timeoutid = -1;
-	var _onload = request.onload;
-	var _onerror = request.onerror;
-	function isTimeout() {
-		return _timeout_status == IAService.consts.TIMEOUT_TRIGGERED;
+	
+	this._onload = request.onload;
+	this._onerror = request.onerror;
+	request.onload = this.decorateWithTimeout(this._onload);
+	request.onerror = this.decorateWithTimeout(this._onerror);
+	
+	Ti.API.info('[IAService send] Send request with url:' + url);
+	request.open(action, url);
+	if (httpHeadParams) {
+		for (var headerParam in httpHeadParams) {
+			request.setRequestHeader(headerParam, httpHeadParams[headerParam]);
+		}
 	}
-	function decorateWithTimeout(callback) {
-		return function(e) {
-			if (!isTimeout()) {
-				clearTimeout(_timeoutid);
-				callback(e);
-			}
-		};
-	}
-	request.onload = decorateWithTimeout(_onload);
-	request.onerror = decorateWithTimeout(_onerror);
-	request.open('GET', url);
-	request.send();
-	_timeoutid = setTimeout(function(){
-		_onerror();
-		_timeout_status = IAService.consts.TIMEOUT_TRIGGERED;
-	}, IAService.settings.timeoutCheck);
+	params ? request.send(params) : request.send();
+	
+	this._timeoutid = setTimeout(_bind(this, function(){
+		this._timeout_status = IAService.consts.TIMEOUT_TRIGGERED;
+		this._onerror({
+			error:'[IAService timeout callback] Request time out.'
+		});
+	}), IAService.settings.timeoutCheck);
 }
 
-IAService.POST = function(request, url, params) {
-	request.timeout = IAService.timeout;
-	request.setRequestHeader('Content-Type','application/x-www-form-urlencoded')
-	request.open('POST', url);
-	request.send(params);
+IAService.GET = function(request, url, params, httpHeadParams) {
+	var service = new IAServiceStub();
+	service.send(request, url, 'GET', params, httpHeadParams);
+}
+
+IAService.POST = function(request, url, params, httpHeadParams) {
+	// add Content-Type to the header if it is not set
+	var headParams = httpHeadParams ? httpHeadParams : {};
+	if (!headParams['Content-Type']) {
+		headParams['Content-Type'] = 'application/x-www-form-urlencoded';
+	}
+	var service = new IAServiceStub();
+	service.send(request, url, 'POST', params, headParams);
 }
 
 exports.GET = IAService.GET;

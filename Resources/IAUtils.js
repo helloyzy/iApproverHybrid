@@ -27,7 +27,7 @@ exports.clone = function(src) {
     var resutl = null;
     if (src) {
     	result = {};
-    	for (prop in src) {
+    	for (var prop in src) {
             result[prop] = src[prop];
         }
     }
@@ -41,7 +41,7 @@ exports.clone = function(src) {
  */
 exports.extend = function(src, target) {
 	if (src && target) {
-        for (prop in src) {
+        for (var prop in src) {
             target[prop] = src[prop];
         }
     }
@@ -51,4 +51,12 @@ exports.bind = function(thisRef, func) {
 	return function() {
 		return func.apply(thisRef, arguments);
 	};
+}
+
+exports.isIOS = function() {
+	return (Ti.Platform.osname == 'iphone' || Ti.Platform.osname == 'ipad')
+}
+
+exports.isAndroid = function() {
+	return (Ti.Platform.osname == 'android')
 }
