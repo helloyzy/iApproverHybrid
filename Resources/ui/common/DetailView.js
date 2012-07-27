@@ -7,51 +7,41 @@ var selfDateArray = null; //["Sun\nMar 6", "Mon\nMar 7", "Tue\nMar 8", "Wed\nMar
 
 var selfDateHourMapArray = null; // [{"Mon\nJul 16" : "8.00"}, {	"Tue\nJul 17" : "8.00"}];
 
+var selfRowDetailView = null;
+
 
 function DetailView() {
-	// addPeriodView();
-	// self.add(createTimeSheetRowsView());
-	// self.add(createRowDetailView());
-	// Titanium.API.log("-----createTimeSheetRowsView--->" );
-	//self.add([dvTable]);
-	//self.add();
-	
-	// var lbl = Ti.UI.createLabel({
-		// text:'Please select an item',
-		// height:'auto',
-		// width:'auto',
-		// color:'#000'
-	// });
-	// self.add(lbl);
-// 	
 	self.addEventListener('itemSelected', function(e) {
 		for (var i = self.children.length - 1; i >= 0; i--) {
 			self.remove(self.children[i]);
 		}
-		
-		//Titanium.API.log("----dv----e.dateRange--->" + e.dateRange); 
+
 		selfDateArray = dvService.convertDateRangeToDateTextArray(e.dateRange)
-		//Titanium.API.log("-----selfDateArray--->" + selfDateArray); 
 		addPeriodView();
-		
-	    
-	    dvService.afterWrapingDetailViewData = detailViewCallBack;
-	    dvService.getDetailViewData(e.selectedApproval);
-		
+
+		dvService.afterWrapingDetailViewData = detailViewCallBack;
+		dvService.getDetailViewData(e.selectedApproval);
+
 	});
-	
-	//drawUI();
-	
+
 	return self;
 };
 
+
 function detailViewCallBack() {
+
 	selfDateHourMapArray = dvService.getDateHourMapArray();
-	self.add(createTimeSheetRowsView());
+	var hourRowsView = createTimeSheetRowsView();
+	self.add(hourRowsView);
+
+	hourRowsView.fireEvent("click", {
+		index : 0
+	});
+
 }
 
 
-function createRowDetailView(){
+function createRowDetailView(rowDetailMap){
 	var result = Ti.UI.createTableView({
 		top : 25 + (selfDateHourMapArray.length-1)*10 + "%",
 		left : "3%",
@@ -65,17 +55,17 @@ function createRowDetailView(){
 	var resultData = []; 
 
 var attrArray = ["Type:", "Location:", "Project/Org.:", "Non-billable:", "Project Task:", "Client:", "Position/Task/Role:"];
-var rowDetailMap = {
-
-		"Type:" : "Salaried",
-		"Location:" : "NonTravel",
-		"Project/Org.:" : "Internal Time and Expense OS China",
-		"Non-billable:" : "True",
-		"Project Task:" : "Vacation",
-		"Client:" : "Perficient",
-		"Position/Task/Role:" : "Non Billable"
-
-}
+// var rowDetailMap = {
+// 
+		// "Type:" : "Salaried",
+		// "Location:" : "NonTravel",
+		// "Project/Org.:" : "Internal Time and Expense OS China",
+		// "Non-billable:" : "True",
+		// "Project Task:" : "Vacation",
+		// "Client:" : "Perficient",
+		// "Position/Task/Role:" : "Non Billable"
+// 
+// }
 
 		
 	var attrLength = attrArray.length;
@@ -153,6 +143,20 @@ function createTimeSheetRowsView(){
 		allowsSelection : true
 	});
 
+	result.addEventListener('click', function(e) {
+		if(selfRowDetailView!=null){
+			self.remove(selfRowDetailView)
+		}
+		
+		var selectedIndex = e.index
+		var rowIdentity = selfDateHourMapArray[selectedIndex].identity;
+		var rowDetailMap = dvService.getRowsDetail()[rowIdentity];
+		selfRowDetailView = createRowDetailView(rowDetailMap);
+		self.add(selfRowDetailView); 
+		
+	}); 
+
+
 	result.setData(createHourRowsData());
 	return result;
 
@@ -189,14 +193,17 @@ function createHourRowsData(){
 
 		var approvalSwitch = Titanium.UI.createSwitch({
 			left : 3.2 + 11.8 * selfDateArray.length + "%",
-			value : true
+			value : true,
+			touchEnabled : true
 		});
 		if (Ti.Platform.osname === "android") {
 			approvalSwitch.style = Titanium.UI.Android.SWITCH_STYLE_CHECKBOX;
 		}
-		// approvalSwitch.addEventListener('change', function(e) {
-		// Titanium.API.info('Basic Switch value = ' + e.value);
-		// });
+
+		approvalSwitch.addEventListener('change', function(e) {
+			Titanium.API.info('Basic Switch value = ' + e.value);
+		}); 
+
 		row.add(approvalSwitch); 
 		rowsData.push(row);
 			
