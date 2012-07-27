@@ -1,8 +1,12 @@
 var _utils = require('IAUtils');
 var _extend = _utils.extend;
-var _clone = _utils.clone;
 
-var IAUser = {};
+var IAUser = { 
+	username : '',
+	password : '',
+	token : '',
+	userId : ''
+};
 var IAUser_volatileProps = {
 	token : true,
 	userId : true
@@ -14,7 +18,9 @@ function _isVolatileProp(prop) {
 
 function _readUserInfo() {
     for (var prop in IAUser) {
-    	IAUser[prop] = Ti.App.Properties.getString(prop, '');
+   		if (!_isVolatileProp(prop)) {
+    		IAUser[prop] = Ti.App.Properties.getString(prop, '');
+    	}
     }
 }
 
@@ -24,15 +30,6 @@ function _writeUserInfo() {
     		Ti.App.Properties.setString(prop, IAUser[prop]);
     	}
     }
-}
-
-exports.init = function() {
-	IAUser.username = '';
-	IAUser.password = '';
-	// read properties from local file system
-    _readUserInfo();
-    IAUser.token = '';
-    IAUser.userId = '';
 }
 
 /**
@@ -45,5 +42,6 @@ exports.setUserInfo = function(user) {
 }
 
 exports.userInfo = function() {
-    return _clone(IAUser);
+	_readUserInfo();
+    return IAUser;
 }

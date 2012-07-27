@@ -2,18 +2,67 @@ var _utils = require('IAUtils');
 var _extend = _utils.extend;
 var _strTrim = _utils.strTrim;
 var _strBetween = _utils.strBetween;
+var _isIOS = _utils.isIOS;
+var _isAndroid = _utils.isAndroid;
 var _createIndicator = require('ui/common/IAActivityIndicator').createIndicator;
 var _userModule = require('model/IAUser');
 var _settingsModule = require('model/IASettings');
 var _userService = require('service/IAUserService');
 
-function _loginView() {
-	
-	var bgColor = '#E6E6E6';
-	var fgColor = 'white'; // '#FOFOFO';
+function _controlHeight(androidHeight, iOSHeight, otherHeight) {
+	if (_isAndroid()) {
+		return androidHeight;
+	} else if (_isIOS()) {
+		return iOSHeight;
+	} else {
+		return otherHeight;
+	}
+}
+
+function _inputControlHeight() {
+	return _controlHeight(70, 40, 40);
+}
+
+function _fontSize(size) {
+	if (_isAndroid()) {
+		return size + 8;
+	}
+	return size;
+}
+
+function _label(text,props) {		
+	var lbl = Ti.UI.createLabel({
+		top:'5%',
+		left:'5%',
+		text:text,
+		color:'gray',
+		font:{fontWeight:'bold', fontSize:_fontSize(18)}
+	});		
+	_extend(props, lbl); // add customized props 
+	return lbl;
+};
+
+function _text(value, hintText, props) {
+	var text = Ti.UI.createTextField({
+	    value:value,
+		hintText:hintText,
+		top:'5%',
+		left:'5%',
+		width:'90%',
+		height:_inputControlHeight()
+	});
+	if (_isIOS()) {
+		text.clearButtonMode = Ti.UI.INPUT_BUTTONMODE_ONBLUR;
+		text.borderStyle = Ti.UI.INPUT_BORDERSTYLE_ROUNDED;
+	}
+	_extend(props, text); // add customized props
+	return text;
+};
+
+function _createLoginView() {
 	
 	var loginBgView = Ti.UI.createView({
-		backgroundColor:bgColor,
+		backgroundColor:'#E6E6E6',
 		top:0,
 		left:0,
 		width:'100%',
@@ -21,7 +70,7 @@ function _loginView() {
 	});
 	
 	var loginView = Ti.UI.createScrollView({
-		backgroundColor:fgColor,
+		backgroundColor:'white',
 		top:'10%',
 		left:'5%',
 		contentWidth:'auto',
@@ -34,67 +83,15 @@ function _loginView() {
 		layout:'vertical'
 	});
 	
-	function _controlHeight(androidHeight, iOSHeight, otherHeight) {
-		var osname = Ti.Platform.osname;
-		if (osname == 'android') {
-			return androidHeight;
-		} else if (osname == 'ipad' || osname == 'iphone') {
-			return iOSHeight;
-		} else {
-			return otherHeight;
-		}
-	}
-	
-	function _inputControlHeight() {
-		return _controlHeight(70, 40, 40);
-	}
-	
-	function _fontSize(size) {
-		var osname = Ti.Platform.osname;
-		if (osname == 'android') {
-			return size + 8;
-		}
-		return size;
-	}
-	
-	function _label(text,props) {		
-		var lbl = Ti.UI.createLabel({
-			top:'5%',
-			left:'5%',
-			text:text,
-			color:'gray',
-			font:{fontWeight:'bold', fontSize:_fontSize(18)}
-		});		
-		_extend(props, lbl); // add customized props 
-		return lbl;
-	};
-	
-	function _text(value, hintText, props) {
-		var text = Ti.UI.createTextField({
-		    value:value,
-			hintText:hintText,
-			top:'5%',
-			left:'5%',
-			width:'90%',
-			height:_inputControlHeight(),
-			clearButtonMode: Ti.UI.INPUT_BUTTONMODE_ONBLUR,
-			borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
-		});
-		_extend(props, text); // add customized props
-		return text;
-	};
-	
-	
-	_userModule.init();
-	
 	var user = _userModule.userInfo();
 	var isRemMe = _settingsModule.settingsInfo().isRememberMe;
 	
 	loginView.add(_label('Log in', {
 		color: 'black',
-		// shadowColor: '#aaa',
-		// shadowOffset: {x:2, y:2},
-		font:{fontWeight:'bold', fontSize:_fontSize(30)}
+		font: {
+			fontWeight:'bold', 
+			fontSize:_fontSize(30)
+		}
 	}));
 	
 	loginView.add(_label('Username'));
@@ -104,19 +101,17 @@ function _loginView() {
 	loginView.add(txtUsername);
 	
 	loginView.add(_label('Password'));
-	var txtPwd = _text(isRemMe ? user.password:'', 'Input password', {
+	var txtPwd = _text(isRemMe ? user.password : '', 'Input password', {
 		passwordMask:true
 	});
 	loginView.add(txtPwd);
 	
-	var remMeViewHeight = _controlHeight(70, 30);
 	var remMeView = Ti.UI.createView({
 		top:'5%',
 		left:0,
 		width:'100%',
-		height:remMeViewHeight,
+		height:_controlHeight(70, 30, 30),
 		layout:'horizontal'
-
 	});
 	var remMeSwitch = Ti.UI.createSwitch({
 		titleOn:'Yes',
@@ -129,7 +124,10 @@ function _loginView() {
 	remMeView.add(_label('Remember me', {
 		left: '7%',
 		top: '2%',
-		font:{fontWeight:'normal', fontSize:_fontSize(16)},
+		font: {
+			fontWeight:'normal', 
+			fontSize:_fontSize(16)
+		},
 		width: '50%'
 	}));
 	remMeView.add(remMeSwitch);
@@ -143,6 +141,7 @@ function _loginView() {
 		title: 'Log in'
 	});
 	loginView.add(btn);
+	
 	var activityIndicator = _createIndicator('Authenticating user...', loginBgView);
 	
 	// event handling
@@ -151,7 +150,7 @@ function _loginView() {
 		_settingsModule.setSettingsInfo({
 		    isRememberMe:isRemMe
 		});
-		if (!isRemMe) { // clear password in the properties
+		if (!isRemMe) { // clear password in the properties if checking off 'Remember me'
 			_userModule.setUserInfo({
 			    password:''
 			});
@@ -222,4 +221,4 @@ function _loginView() {
 	return loginBgView;
 }
 
-exports.createLoginView = _loginView;
+exports.createLoginView = _createLoginView;

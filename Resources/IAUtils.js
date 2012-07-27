@@ -56,3 +56,7 @@ exports.bind = function(thisRef, func) {
 exports.isIOS = function() {
 	return (Ti.Platform.osname == 'iphone' || Ti.Platform.osname == 'ipad')
 }
+
+exports.isAndroid = function() {
+	return (Ti.Platform.osname == 'android')
+}

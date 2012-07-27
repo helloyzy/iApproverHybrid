@@ -6,7 +6,9 @@
 var _utils = require('IAUtils');
 var _extend = _utils.extend;
 
-var IASettings = {};
+var IASettings = {
+	isRememberMe : false
+};
 
 function _readSettings() {
 	IASettings.isRememberMe = Ti.App.Properties.getBool('isRememberMe', false);
