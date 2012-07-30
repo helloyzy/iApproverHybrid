@@ -5,9 +5,13 @@ var dvService = require("/ui/common/PVService").getService();
 
 var selfDateArray = null; //["Sun\nMar 6", "Mon\nMar 7", "Tue\nMar 8", "Wed\nMar 9", "Thu\nMar 10", "Fri\nMar 11", "Sat\nMar 12"];
 
-var selfDateHourMapArray = null; // [{"Mon\nJul 16" : "8.00"}, {	"Tue\nJul 17" : "8.00"}];
+var selfDateHourMapArray = null; // [{"Mon\nJul 16" : "8.00", "identity" :"a number","rowElement", rowElement}];
 
 var selfRowDetailView = null;
+
+var selfSubmitButton = null;
+
+var selfHourTableView = null;
 
 
 function DetailView() {
@@ -21,6 +25,38 @@ function DetailView() {
 
 		dvService.afterWrapingDetailViewData = detailViewCallBack;
 		dvService.getDetailViewData(e.selectedApproval);
+		
+	});
+
+	selfSubmitButton = Titanium.UI.createButton({
+		bottom : 0,
+		left : 0,
+		title : 'Submit'
+	});
+	selfSubmitButton.addEventListener('click', function(e) {
+		Titanium.API.info("You clicked the Submit button");
+		
+		Titanium.API.info("tableview.data--->" +selfHourTableView.data);
+		Titanium.API.info("tableview.data[0]--->" +selfHourTableView.data[0]);
+		Titanium.API.info("tableview.data[0].rows--->" +selfHourTableView.data[0].rows);
+		
+
+        var submitRowInfoArray = [];
+		var rowArray = selfHourTableView.data[0].rows;
+		for (var rowIndex = 0; rowIndex < rowArray.length; rowIndex++) {
+			var row = rowArray[rowIndex];
+			var theSwitch = row.children[row.children.length - 1];
+			var approvalStatus = theSwitch.value === true ? "APPROVAL_PENDING" : "DISAPPROVAL_PENDING";
+			Titanium.API.info("theSwitch--->" + theSwitch.value);
+			Titanium.API.info("approvalStatus--->" + approvalStatus);
+			var rowInfo = {
+				"approvalStatus" : approvalStatus,
+				"submitRow" : selfDateHourMapArray[rowIndex].rowElement,
+			}
+			submitRowInfoArray.push(rowInfo);
+		}
+
+        dvService.getApprovalSoap(submitRowInfoArray);
 
 	});
 
@@ -31,12 +67,14 @@ function DetailView() {
 function detailViewCallBack() {
 
 	selfDateHourMapArray = dvService.getDateHourMapArray();
-	var hourRowsView = createTimeSheetRowsView();
-	self.add(hourRowsView);
+	selfHourTableView = createTimeSheetRowsView();
+	self.add(selfHourTableView);
 
-	hourRowsView.fireEvent("click", {
+	selfHourTableView.fireEvent("click", {
 		index : 0
 	});
+
+    self.add(selfSubmitButton);
 
 }
 

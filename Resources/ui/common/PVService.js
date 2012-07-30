@@ -13,13 +13,13 @@ pvService.setUserInfo = function(newUserInfo) {
 }
 
 pvService.getUserInfo = function(newUserInfo) {
-	var username = "vernon.stinebaker";
-	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
-	var userID = "0_2690_25053";
+	// var username = "vernon.stinebaker";
+	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
+	// var userID = "0_2690_25053";
 
-	// var username = "rita.chen";
-	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
-	// var userID = "0_2820_25053";
+	var username = "rita.chen";
+	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
+	var userID = "0_2820_25053";
 
 	pvService.userInfo.username = username;
 	pvService.userInfo.token = token;
@@ -285,6 +285,7 @@ function initDateHourMapArrayWithDoc(doc){
 				row = row !==null ? row : {};
 				row[cellDate] = cellHour;
 				row.identity = rowArray.item(i).getAttribute("identity");
+				row.rowElement = rowArray.item(i);
 			}
 		}
 		if (row !== null) {
@@ -657,12 +658,18 @@ pvService.postSoap = function(action, soap, callback){
 	
 	var client = Ti.Network.createHTTPClient();
 	client.onload = callback;
+	client.onerror = requestErrorCallback;
 
 	client.open('POST', 'https://stlpv1.perficient.com/axis2/services/PVAPIService', true);
 	client.setRequestHeader('Content-Type', 'text/xml; charset=utf-8');
 	client.setRequestHeader('SOAPAction', action);
 
 	client.send(soap);
+}
+
+function requestErrorCallback(){
+	pvService.hideIndicator();
+	alert("Request Error!");
 }
 
 //---------------------------------------------------below is indicator code----------------------------------------------------------------------------------
@@ -680,7 +687,6 @@ pvService.hideIndicator = function() {
 		pvService.indicator.hide();
 	}
 }
-
 
 //---------------------------------------------------below is fetch location code----------------------------------------------------------------------------------
 pvService.locationCallback = function(){
@@ -739,3 +745,93 @@ pvService.getLocationMap = function(callback) {
 }
 
 
+
+//---------------------------------------------------below is approval code----------------------------------------------------------------------------------
+
+pvService.getApprovalSoap = function(rowInfoArray){
+
+var userInfo = pvService.getUserInfo();
+var username = userInfo.username;
+var token = userInfo.token;
+
+	
+var head = "";
+head += "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+head += "<SOAP-ENV:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
+head += "<SOAP-ENV:Body>"
+head += "<cmd:changeRequest version=\"9.0sp1b, Build 09\" username=\""
+head += username
+head += "\" "
+head += "password=\""
+head += token
+head += "\" "
+head += "xsi:type=\"ns1:ChangeRequest\" xmlns:cmd=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\" xmlns:oper=\"http://primavera.com/schemas/pvapi/PVOperational.xsd\" xmlns:chge=\"http://primavera.com/schemas/pvapi/PVChange.xsd\" xmlns:ns1=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\">"
+head += "<transactionCommitMode>EXTENDED_SYNCH</transactionCommitMode>"
+
+
+	var body = '';
+	for (var i = 0; i < rowInfoArray.length; i++) {
+		var rowInfo = rowInfoArray[i];
+		var approvalStatus = rowInfo.approvalStatus;
+
+		var cellArray = rowInfo.submitRow.getElementsByTagName("timeSheetCells");
+		for (var j = 0; j < cellArray.length; j++) {
+			var cell = cellArray.item(j);
+			var cellIdentity = cell.getAttribute("identity");
+			var cellEntityInstanceVersion = cell.getAttribute("entityInstanceVersion");
+
+			var record = "";
+			record += "<records xsi:type=\"ns2:UpdateTimeSheetCell\" xmlns:ns2=\"http://primavera.com/schemas/pvapi/PVChange.xsd\">"
+			record += "<changeKind>UPDATE</changeKind>"
+			record += "<timeSheetCell identity=\""
+			record += cellIdentity
+			record += "\" entityInstanceVersion=\""
+			record += cellEntityInstanceVersion
+			record += "\" xsi:type=\"ns3:ModifiedTimeSheetCell\" xmlns:ns3=\"http://primavera.com/schemas/pvapi/PVChange.xsd\">"
+			record += "<approvalStatus>"
+			record += approvalStatus
+			record += "</approvalStatus>"
+			record += "</timeSheetCell>"
+			record += "</records>"
+
+			body += record;
+
+		}
+	}
+
+
+// 
+    // NSMutableString *body = [NSMutableString string];
+    // for (PVTimeSheetRow * row in rows) {
+        // for(PVTimeSheetCell *cell in row.timeSheetCells){
+             // NSString *record =[EnvelopeFactory contact:
+                      // @"<records xsi:type=\"ns2:UpdateTimeSheetCell\" xmlns:ns2=\"http://primavera.com/schemas/pvapi/PVChange.xsd\">"
+                      // @"<changeKind>UPDATE</changeKind>"
+                      // @"<timeSheetCell identity=\"",
+                      // cell.identity,
+                      // @"\" entityInstanceVersion=\"",
+                      // cell.entityInstanceVersion,
+                      // @"\" xsi:type=\"ns3:ModifiedTimeSheetCell\" xmlns:ns3=\"http://primavera.com/schemas/pvapi/PVChange.xsd\">"
+                      // @"<approvalStatus>",
+                      // statusOfRow(row),
+                      // @"</approvalStatus>"
+                      // @"</timeSheetCell>"
+                      // @"</records>",
+                      // nil
+                      // ];
+            // [body appendString:record];
+        // }
+    // }
+    
+
+	var tail = "";
+	tail += "</cmd:changeRequest>"
+	tail += "</SOAP-ENV:Body>"
+	tail += "</SOAP-ENV:Envelope>"
+
+
+	var soapResult = head + body + tail;
+	Titanium.API.log("-----changeRequest soap--->" + soapResult);
+	return soapResult;
+
+}
