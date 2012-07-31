@@ -61,9 +61,8 @@ function _createIndicator_ios(message, pView) {
 }
 
 function _createIndicator_android(message) {
-	var activityIndicator = Ti.UI.createActivityIndicator({
-		message: message
-	});
+	var activityIndicator = Ti.UI.createActivityIndicator();
+	activityIndicator.message = message;
 	return activityIndicator;
 }
 

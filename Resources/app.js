@@ -1,29 +1,3 @@
-// this sets the background color of the master UIView (when there are no windows/tab groups on it)
-Titanium.UI.setBackgroundColor('#000');
-
-/**
-require('require_patch').monkeypatch(this);
-var _utils = require('IAUtils');
-
-String.prototype.trim = function() {
-    return _utils.strTrim(this);
-};
-String.prototype.between = function(left, right) {
-    return _utils.strBetween(this, left, right);
-};
-
-Function.prototype.bind = function(obj) {
-    return function() {
-        return this.apply(obj, arguments);
-    };
-};
-
-// add global functions
-this.clone = _utils.clone;
-this.extend = _utils.extend;
-this.isIOS = _utils.isIOS;
-this.bind = _utils.bind; // equals to Function.prototype.bind
-*/
 
 var _createLoginView = require('ui/common/IALoginView').createLoginView;
 

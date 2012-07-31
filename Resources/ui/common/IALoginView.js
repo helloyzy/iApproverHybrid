@@ -96,7 +96,8 @@ function _createLoginView() {
 	
 	loginView.add(_label('Username'));
 	var txtUsername = _text(user.username, 'Input username', {
-		autocapitalization:	Ti.UI.TEXT_AUTOCAPITALIZATION_WORDS
+		// autocapitalization:	Ti.UI.TEXT_AUTOCAPITALIZATION_WORDS
+		keyboardType : Ti.UI.KEYBOARD_NAMEPHONE_PAD
 	});
 	loginView.add(txtUsername);
 	
@@ -142,8 +143,6 @@ function _createLoginView() {
 	});
 	loginView.add(btn);
 	
-	var activityIndicator = _createIndicator('Authenticating user...', loginBgView);
-	
 	// event handling
 	remMeSwitch.addEventListener('change', function(e) {
 		var isRemMe = e.source.value; // e.source --> switch control
@@ -155,36 +154,7 @@ function _createLoginView() {
 			    password:''
 			});
 		}
-	});
-	
-	function validationFailure(errorMsg) {
-		activityIndicator.hide();
-		var errorDialog = Ti.UI.createAlertDialog({
-			message: errorMsg ? errorMsg : 'Please check your network connection and try again!',
-			ok: 'OK',
-			title: 'Authentication Failure'
-		});
-		errorDialog.show();
-	}
-	
-	function validationSuccess() {
-		var _userToken_onload = function(e) {
-			activityIndicator.hide();
-			var responseStr = e.source.responseText;
-			var userToken = Ti.Network.decodeURIComponent(_strBetween(responseStr,'AuthInfo', '&timeout='));
-			var userId = _strBetween(responseStr, '&userOID=', '&configureExpenses=');
-			_userModule.setUserInfo({
-			    username:_strTrim(txtUsername.value),
-			    password:remMeSwitch.value ? _strTrim(txtPwd.value) : '',
-			    userId:userId,
-			    token:userToken
-			});
-		};
-		var _userToken_onerror = function(e) {
-			validationFailure();
-		}
-		_userService.getUserToken(_userToken_onload, _userToken_onerror);
-	}
+	});	
 	
 	btn.addEventListener('click', function(e) {	
 	    var username = _strTrim(txtUsername.value);
@@ -198,7 +168,35 @@ function _createLoginView() {
 			txtPwd.focus();
 			return;
 		}
-		activityIndicator.show();
+		var activityIndicator = _createIndicator('Authenticating user...', loginBgView);
+		function validationFailure(errorMsg) {
+			activityIndicator.hide();
+			var errorDialog = Ti.UI.createAlertDialog({
+				message: errorMsg ? errorMsg : 'Please check your network connection and try again!',
+				ok: 'OK',
+				title: 'Authentication Failure'
+			});
+			errorDialog.show();
+		}
+		
+		function validationSuccess() {
+			var _userToken_onload = function(e) {
+				activityIndicator.hide();
+				var responseStr = e.source.responseText;
+				var userToken = Ti.Network.decodeURIComponent(_strBetween(responseStr,'AuthInfo', '&timeout='));
+				var userId = _strBetween(responseStr, '&userOID=', '&configureExpenses=');
+				_userModule.setUserInfo({
+				    username:_strTrim(txtUsername.value),
+				    password:remMeSwitch.value ? _strTrim(txtPwd.value) : '',
+				    userId:userId,
+				    token:userToken
+				});
+			};
+			var _userToken_onerror = function(e) {
+				validationFailure();
+			}
+			_userService.getUserToken(_userToken_onload, _userToken_onerror);
+		}
 		var _verifyUser_onload = function(e) {
 			var responseStr = e.source.responseText;
 			if (responseStr.indexOf('<title>Not Authenticated</title>') < 0) {
@@ -208,13 +206,16 @@ function _createLoginView() {
 			}
 		};
 		var _verifyUser_onerror = function(e) {
+			// only for iOS, skip this error
 			if (e.error.indexOf('The request failed because it redirected too many times') >= 0) {
 				validationSuccess();
 			} else {
 				validationFailure();
 			}
 		};
+		
 		_userService.verifyUser(username, password, _verifyUser_onload, _verifyUser_onerror);
+		activityIndicator.show();
 	});
 	
 	loginBgView.add(loginView);	

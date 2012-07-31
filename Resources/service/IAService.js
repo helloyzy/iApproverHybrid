@@ -65,12 +65,14 @@ IAService.GET = function(request, url, params, httpHeadParams) {
 
 IAService.POST = function(request, url, params, httpHeadParams) {
 	// add Content-Type to the header if it is not set
+	/**
 	var headParams = httpHeadParams ? httpHeadParams : {};
 	if (!headParams['Content-Type']) {
 		headParams['Content-Type'] = 'application/x-www-form-urlencoded';
 	}
+	*/
 	var service = new IAServiceStub();
-	service.send(request, url, 'POST', params, headParams);
+	service.send(request, url, 'POST', params, httpHeadParams);
 }
 
 exports.GET = IAService.GET;
