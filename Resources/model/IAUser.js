@@ -5,11 +5,11 @@ var IAUser = {
 	username : '',
 	password : '',
 	token : '',
-	userId : ''
+	userID : ''
 };
 var IAUser_volatileProps = {
 	token : true,
-	userId : true
+	userID : true
 };
 
 function _isVolatileProp(prop) {

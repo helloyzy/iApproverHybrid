@@ -9,6 +9,8 @@ var _userModule = require('model/IAUser');
 var _settingsModule = require('model/IASettings');
 var _userService = require('service/IAUserService');
 
+var _pvService = require("/ui/common/PVService").getService();
+
 function _controlHeight(androidHeight, iOSHeight, otherHeight) {
 	if (_isAndroid()) {
 		return androidHeight;
@@ -154,7 +156,37 @@ function _createLoginView() {
 			    password:''
 			});
 		}
-	});	
+	});
+	
+	function validationFailure(errorMsg) {
+		activityIndicator.hide();
+		var errorDialog = Ti.UI.createAlertDialog({
+			message: errorMsg ? errorMsg : 'Please check your network connection and try again!',
+			ok: 'OK',
+			title: 'Authentication Failure'
+		});
+		errorDialog.show();
+	}
+	
+	function validationSuccess() {
+		var _userToken_onload = function(e) {
+			activityIndicator.hide();
+			var responseStr = e.source.responseText;
+			var userToken = Ti.Network.decodeURIComponent(_strBetween(responseStr,'AuthInfo', '&timeout='));
+			var userID = _strBetween(responseStr, '&userOID=', '&configureExpenses=');
+			_userModule.setUserInfo({
+			    username:_strTrim(txtUsername.value),
+			    password:remMeSwitch.value ? _strTrim(txtPwd.value) : '',
+			    userID:userID,
+			    token:userToken
+			});
+			// fetchReportWithUserInfo(_userModule.userInfo());
+		};
+		var _userToken_onerror = function(e) {
+			validationFailure();
+		}
+		_userService.getUserToken(_userToken_onload, _userToken_onerror);
+	}
 	
 	btn.addEventListener('click', function(e) {	
 	    var username = _strTrim(txtUsername.value);
@@ -221,5 +253,67 @@ function _createLoginView() {
 	loginBgView.add(loginView);	
 	return loginBgView;
 }
+
+
+
+function fetchReportWithUserInfo(userInfo) {
+	// Titanium.API.log("-----username--->" + userInfo.username);
+	// Titanium.API.log("-----password--->" + userInfo.password);
+	// Titanium.API.log("-----userID--->" + userInfo.userID);
+	// Titanium.API.log("-----token--->" + userInfo.token);
+	// alert("-----username--->" + userInfo.username);
+	// alert("-----password--->" + userInfo.password);
+	// alert("-----userID--->" + userInfo.userID);
+	// alert("-----token--->" + userInfo.token);
+
+     //alert("ok")
+
+	_pvService.setUserInfo(userInfo);
+	openReportWindow();
+
+}
+
+
+function openReportWindow(){
+    
+    //determine platform and form factor and render approproate components
+	var osname = Ti.Platform.osname,
+		version = Ti.Platform.version,
+		height = Ti.Platform.displayCaps.platformHeight,
+		width = Ti.Platform.displayCaps.platformWidth;
+	
+	//considering tablet to have one dimension over 900px - this is imperfect, so you should feel free to decide
+	//yourself what you consider a tablet form factor for android
+	var isTablet = osname === 'ipad' || (osname === 'android' && (width > 899 || height > 899));
+	
+	var Window;
+	if (isTablet) {
+		Window = require('ui/tablet/ApplicationWindow');
+	}
+	else {
+		// iPhone and Mobile Web make use of the platform-specific navigation controller,
+		// all other platforms follow a similar UI pattern
+		if (osname === 'iphone') {
+			Window = require('ui/handheld/ios/ApplicationWindow');
+		}
+		else if (osname == 'mobileweb') {
+			Window = require('ui/handheld/mobileweb/ApplicationWindow');
+		}
+		else {
+			Window = require('ui/handheld/android/ApplicationWindow');
+		}
+	}
+
+	var theWindow = new Window();
+	_pvService.indicator =_createIndicator('Loading...', theWindow);
+	_pvService.showIndicator();
+	theWindow.open();
+
+	if (isTablet) {
+		theWindow.orientationModes = [Titanium.UI.LANDSCAPE_RIGHT, Titanium.UI.LANDSCAPE_LEFT]
+	}
+
+}
+
 
 exports.createLoginView = _createLoginView;

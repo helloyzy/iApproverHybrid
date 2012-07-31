@@ -6,43 +6,49 @@ exports.getService =function(){
 	return pvService;
 }
 
+
+pvService.userInfo = null;
+pvService.setUserInfo = function(newUserInfo) {
+	pvService.userInfo = newUserInfo;
+}
+
+pvService.getUserInfo = function(newUserInfo) {
+	// var username = "vernon.stinebaker";
+	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
+	// var userID = "0_2690_25053";
+
+	var username = "rita.chen";
+	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
+	var userID = "0_2820_25053";
+
+	pvService.userInfo.username = username;
+	pvService.userInfo.token = token;
+	pvService.userInfo.userID = userID;
+
+	return pvService.userInfo;
+}
+
+
+
 pvService.locationIdentyToName = null;
 pvService.masterViewRowsData = null;
 pvService.masterViewResponseDoc = null;
 pvService.dateHourMapArray = null;
+pvService.rowsDetail = null;
+var detailXml = null;
 
 //---------------------------------------------------below is getTimeSheetRowsDetail code----------------------------------------------------------------------------------
 
-// pvService.locationCallback = function(){
-		// var locationMap = {};
-		// var locations = this.responseXML.documentElement.getElementsByTagName("locations");
-		// for (var i = 0; i < locations.length; i++) {
-			// var name = locations.item(i).getAttribute("name");
-			// var identity = locations.item(i).getAttribute("identity");
-			// locationMap[identity] = name;
-		// }
-		// Titanium.API.log("test locationMap[0_11_25571] is Florida?-->" + locationMap["0_11_25571"]);
-		// Titanium.API.log("test locationMap[0_431_25571] is NonTravel?-->" + locationMap["0_431_25571"]);
-// 		
-		// pvService.locationIdentyToName = locationMap;
-		// pvService.afterGetLocation();
-// }
-// 
-// 
 pvService.getDetailViewSoap = function(approval){
-    var username = "vernon.stinebaker";
-	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
-	var userID = "0_2690_25053";
-	
 
-	// var username =  "rita.chen";
-	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
-	// var userID = "0_2820_25053";
-
+	var userInfo = pvService.getUserInfo();
+	var username = userInfo.username;
+	var token = userInfo.token;
+	var userID = userInfo.userID;
 
 	var approvalIdentity = approval.getAttribute("identity");
 	var aaprovalReportIdentity = pvService.approvalIdentityToReportIdentity(pvService.masterViewResponseDoc)[approvalIdentity];
-	var approvalUserRefOid = approval.getElementsByTagName("userRef").item(0).getAttribute("oid");
+	var approvalUserRefOid = approval.getElementsByTagName("userRef").item(0).getAttribute("oid"); 
 
 
 	var s='';
@@ -93,12 +99,182 @@ pvService.getDetailViewData = function(approval) {
 pvService.getDetailViewDataCallBack = function(){
 	Titanium.API.log("-----getDetailViewDataCallBack.responseText--->" + this.responseText);
 
-	pvService.dateHourMapArray = [];
-
 	var doc = this.responseXML.documentElement;
+	initDateHourMapArrayWithDoc(doc);
+	initRowsDetailWithDoc(doc);
+
+	pvService.afterWrapingDetailViewData();
+	pvService.hideIndicator();
+}
+
+pvService.getRowsDetail = function(){
+	Titanium.API.log("-----pvService.getRowsDetail --->");
+	return pvService.rowsDetail;
+}
+
+function initRowsDetailWithDoc(doc){
+	detailXml = {};
+	//init to reload when get next time
+	// timeSheetRowsOfDoc(doc);
+	// projectsOfDoc(doc);
+	// transactionTypesOfDoc(doc);
+	// tasksOfDoc(doc);
+	// clientsOfDoc(doc);
+	// positionsOfDoc(doc);
+
+	pvService.rowsDetail = {};
+
+	var rowArray = timeSheetRowsOfDoc(doc);
+	for (var i = 0; i < rowArray.length; i++) {
+		var row = rowArray[i];
+		if (!pvService.isTimeSheetRowValid(row.identity, doc)) {
+			continue;
+		}
+
+		var rowProjectClientRef = projectsOfDoc(doc)[row.projectRef].clientRef;
+		var rowDetailMap = {
+			"Type:" : transactionTypesOfDoc(doc)[row.transactionTypeRef].name,
+			"Location:" : pvService.locationIdentityToLocationName()[row.locationRef],
+			"Project/Org.:" : projectsOfDoc(doc)[row.projectRef].name,
+			"Non-billable:" : row.billable === "false" ? "True" : "False",
+
+			"Project Task:" : tasksOfDoc(doc)[row.taskRef].name,
+			"Client:" : clientsOfDoc(doc)[rowProjectClientRef].name,
+			"Position/Task/Role:" : positionsOfDoc(doc)[row.positionRef].name
+		}
+		pvService.rowsDetail[row.identity] = rowDetailMap;
+	}
+
+}
+
+
+
+function timeSheetRowsOfDoc(doc) {
+	if (detailXml.timeSheetRowArray !== undefined) {
+		return detailXml.timeSheetRowArray;
+	}
+	detailXml.timeSheetRowArray = [];
 	var rowArray = doc.getElementsByTagName("timeSheetRows");
 	for (var i = 0; i < rowArray.length; i++) {
-		var row = {};
+		var row = rowArray.item(i);
+		var rowMap = {
+			"identity" : row.getAttribute("identity"),
+			"billable" : row.getAttribute("billable"),
+			"transactionTypeRef" : row.getElementsByTagName("transactionTypeRef").item(0).getAttribute("identity"),
+			"locationRef" : row.getElementsByTagName("locationRef").item(0).getAttribute("identity"),
+			"projectRef" : row.getElementsByTagName("projectRef").item(0).getAttribute("identity"),
+			"positionRef" : row.getElementsByTagName("positionRef").item(0).getAttribute("identity"),
+			"taskRef" : row.getElementsByTagName("taskRef").item(0).getAttribute("identity")
+		}
+		detailXml.timeSheetRowArray.push(rowMap);
+	}
+	return detailXml.timeSheetRowArray
+}
+
+
+
+
+function projectsOfDoc(doc) {
+	if (detailXml.projectsMap !== undefined) {
+		return detailXml.projectsMap;
+	}
+	detailXml.projectsMap = {};
+	var projectsArray = doc.getElementsByTagName("projects");
+
+	for (var i = 0; i < projectsArray.length; i++) {
+		var project = projectsArray.item(i);
+		var identity = project.getAttribute("identity");
+		var name = project.getAttribute("name");
+		var clientRef = project.getElementsByTagName("clientRef").item(0).getAttribute("identity")
+		detailXml.projectsMap[identity] = {
+			"name" : name,
+			"clientRef" : clientRef
+		};
+	}
+	return detailXml.projectsMap
+}
+
+
+function transactionTypesOfDoc(doc){
+	if (detailXml.transactionTypesMap !== undefined) {
+		return detailXml.transactionTypesMap;
+	}
+	detailXml.transactionTypesMap = {};
+	var typeArray = doc.getElementsByTagName("transactionTypes");
+	for (var i = 0; i < typeArray.length; i++) {
+		var type = typeArray.item(i);
+		var identity = type.getAttribute("identity");
+		var name = type.getAttribute("name");
+		detailXml.transactionTypesMap[identity] = {
+			"name" : name
+		};
+	}
+	return detailXml.transactionTypesMap;
+
+}
+
+function tasksOfDoc(doc){
+	if (detailXml.tasksMap !== undefined) {
+		return detailXml.tasksMap;
+	}
+	detailXml.tasksMap = {};
+	var taskArray = doc.getElementsByTagName("tasks");
+	for (var i = 0; i < taskArray.length; i++) {
+		var task = taskArray.item(i);
+		var identity = task.getAttribute("identity");
+		var name = task.getAttribute("name");
+		detailXml.tasksMap[identity] = {
+			"name" : name
+		};
+	}
+	return detailXml.tasksMap;
+}
+
+function positionsOfDoc(doc){
+	if (detailXml.positionsMap !== undefined) {
+		return detailXml.positionsMap;
+	}
+	detailXml.positionsMap = {};
+	var positionArray = doc.getElementsByTagName("positions");
+	for (var i = 0; i < positionArray.length; i++) {
+		var position = positionArray.item(i);
+		var identity = position.getAttribute("identity");
+		var name = position.getAttribute("name");
+		detailXml.positionsMap[identity] = {
+			"name" : name
+		};
+	}
+	return detailXml.positionsMap;
+}
+
+function clientsOfDoc(doc){
+	if (detailXml.clientsMap !== undefined) {
+		return detailXml.clientsMap;
+	}
+	detailXml.clientsMap = {};
+	var clientArray = doc.getElementsByTagName("clients");
+	for (var i = 0; i < clientArray.length; i++) {
+		var client = clientArray.item(i);
+		var identity = client.getAttribute("identity");
+		var name = client.getAttribute("name");
+		detailXml.clientsMap[identity] = {
+			"name" : name
+		};
+	}
+	return detailXml.clientsMap;
+}
+
+
+
+
+
+
+
+function initDateHourMapArrayWithDoc(doc){
+	pvService.dateHourMapArray = [];
+	var rowArray = doc.getElementsByTagName("timeSheetRows");
+	for (var i = 0; i < rowArray.length; i++) {
+		var row = null;
 		var cellArray = rowArray.item(i).getElementsByTagName("timeSheetCells");
 		for (var j = 0; j < cellArray.length; j++) {
 			var cell = cellArray.item(j);
@@ -106,15 +282,16 @@ pvService.getDetailViewDataCallBack = function(){
 			if (approvalStatus.indexOf("SUBMITTED") !== -1) {
 				var cellHour = (parseFloat(cell.getAttribute("cellMinutes")) / 60).toFixed(2);
 				var cellDate = pvService.formatXmlDateToDetailViewDate(cell.getAttribute("cellDate"));
+				row = row !==null ? row : {};
 				row[cellDate] = cellHour;
+				row.identity = rowArray.item(i).getAttribute("identity");
+				row.rowElement = rowArray.item(i);
 			}
 		}
-		pvService.dateHourMapArray.push(row);
-
+		if (row !== null) {
+			pvService.dateHourMapArray.push(row);
+		}
 	}
-	
-	pvService.afterWrapingDetailViewData();
-	
 }
 
 pvService.afterWrapingDetailViewData = function(){
@@ -157,6 +334,8 @@ pvService.getTimeReportCallback = function() {
 	pvService.masterViewResponseDoc = this.responseXML.documentElement;
     initMasterViewRowsDataWithDoc(pvService.masterViewResponseDoc);
     pvService.masterViewCallback();
+    
+    pvService.hideIndicator();
 }
 
 pvService.masterViewCallback = function() {
@@ -260,7 +439,7 @@ pvService.convertDateRangeToDateTextArray = function(dateRange){
 	}
 	result.push(toDate.format("ddd\nmmm d"));
 
-	Titanium.API.log("-----convertDateRangeToDateTextArray--->" + result);
+	//Titanium.API.log("-----convertDateRangeToDateTextArray--->" + result);
 	return result;
 
 }
@@ -302,7 +481,7 @@ pvService.locationOfApproval = function(approval, doc){
 	for (var i = 0; i < timeSheetRowIdentityArray.length; i++) {
 		var theTimeSheetRowIdentity = timeSheetRowIdentityArray[i];
 		var locationIdentity = pvService.timeSheetRowIdentityToLocationIdentity(doc)[theTimeSheetRowIdentity];
-		var locationName = pvService.locationIdentityToLocationName(doc)[locationIdentity];
+		var locationName = pvService.locationIdentityToLocationName()[locationIdentity];
 		if (!locationArray.contains(locationName)) {
 			locationArray.push(locationName)
 		}
@@ -416,7 +595,7 @@ pvService.timeSheetRowIdentityToLocationIdentity = function(doc) {
 	return timeSheetRowIdentityToLocationIdentityMap = map;
 }
 
-pvService.locationIdentityToLocationName = function(doc) {
+pvService.locationIdentityToLocationName = function() {
 	return pvService.locationIdentyToName;
 }
 
@@ -433,16 +612,10 @@ pvService.isTimeSheetRowValid = function(timeSheetRowIdentity, doc){
 }
 
 pvService.getMainViewSoap = function(){
-	var username = "vernon.stinebaker";
-	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
-	var userID = "0_2690_25053";
-	
-
-	// var username =  "rita.chen";
-	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
-	// var userID = "0_2820_25053";
-
-	
+    var userInfo =pvService.getUserInfo();
+	var username =  userInfo.username;
+	var token = userInfo.token;
+	var userID = userInfo.userID;
 	
 	
 	var result='';
@@ -481,14 +654,38 @@ pvService.afterGetLocation = function(){
 
 //---------------------------------------------------below is service post code----------------------------------------------------------------------------------
 pvService.postSoap = function(action, soap, callback){
+	pvService.showIndicator();
+	
 	var client = Ti.Network.createHTTPClient();
 	client.onload = callback;
+	client.onerror = requestErrorCallback;
 
 	client.open('POST', 'https://stlpv1.perficient.com/axis2/services/PVAPIService', true);
 	client.setRequestHeader('Content-Type', 'text/xml; charset=utf-8');
 	client.setRequestHeader('SOAPAction', action);
 
 	client.send(soap);
+}
+
+function requestErrorCallback(){
+	pvService.hideIndicator();
+	alert("Request Error!");
+}
+
+//---------------------------------------------------below is indicator code----------------------------------------------------------------------------------
+
+pvService.showIndicator = function() {
+	if (pvService.indicator !== undefined && pvService.isShowingIndicator !== true) {
+		pvService.isShowingIndicator = true;
+		pvService.indicator.show();
+	}
+}
+
+pvService.hideIndicator = function() {
+	if (pvService.indicator !== undefined && pvService.isShowingIndicator === true) {
+		pvService.isShowingIndicator = false;
+		pvService.indicator.hide();
+	}
 }
 
 //---------------------------------------------------below is fetch location code----------------------------------------------------------------------------------
@@ -504,47 +701,40 @@ pvService.locationCallback = function(){
 		Titanium.API.log("test locationMap[0_431_25571] is NonTravel?-->" + locationMap["0_431_25571"]);
 		
 		pvService.locationIdentyToName = locationMap;
+		
 		pvService.afterGetLocation();
 }
 
 
 pvService.getLocationSoap = function(){
-		var username = "vernon.stinebaker";
-	var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a74dc52abd0b4fc8e776d53c554c36b929364c18acd95156986c7e20196bd78cee33370c9d3421dbc";
-	var userID = "0_2690_25053";
-	
 
-	// var username =  "rita.chen";
-	// var token = "AuthInfo:baf8a9fc0cdb24431f08035858a0751c88839a8c75288f81f85a14de4465cd42360b70f9828ce16b4cc634d01f3a834f27a7085e9cf6ef642ddaeb33adc5a0f72ec76792aded4abd97ca89b471fb22c25b259bad5bcf48f7477d4013f983921abea35372c67890019cad6f71714a7e6d1396e7f3ddbc40cd170b3c49b508780127a7085e9cf6ef64176133cdb3fbbab3117de1aa19a771eeeb9e571e532281dcd4be2e61c7ac76bbd42e59c2c044118eaa06489eb37b58ef1c00e4aa2b97a5b53726577792f436e20e2fedeef315dc060c3ee20f3962b65937ba1474fdf311605aa4e9ea48b14501606cf6cc46c844ad1f08035858a0751c88839a8c75288f8131a0cc748446ecd61addbed56bd8780bbe8136e644d2b400ae2ff9ba42f5a53ca272ee281b82333db566634c7af5b21b224e591a64acfafaac6719494e3903d3305846dc171389ea36651f9afc31a4690b213d4e86c2be0a866e425ac4bb3164c28c497bbbc937ff5c39e8c69fed443c";
-	// var userID = "0_2820_25053";
+	var userInfo = pvService.getUserInfo();
+	var username = userInfo.username;
+	var token = userInfo.token;
+	var userID = userInfo.userID;
 
-	
-	
-	
-	  var s='';
-    
-      s+="<?xml version=\"1.0\" encoding=\"utf-8\"?>"
-                                s+="<SOAP-ENV:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
-                                s+="<SOAP-ENV:Body>"
-                                s+="<cmd:projectionRequest version=\"9.0sp1b, Build 09\" username=\""
-                                
-                                //service.username
-                                s+=username
-                                
-                                s+="\"  "
-                                s+="password=\""
-                                
-                                //service.token
-                                s+=token
-                                
-                                s+="\" " 
-                                s+="xsi:type=\"ns1:ProjectionRequest\" includeInactive=\"true\" xmlns:cmd=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\" xmlns:oper=\"http://primavera.com/schemas/pvapi/PVOperational.xsd\" xmlns:ns1=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\">"
-                                s+="<locationProjection xsi:type=\"ns2:LocationProjectionSpecification\" xmlns:ns2=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\"/>"                  
-                                s+="</cmd:projectionRequest>"
-                                s+="</SOAP-ENV:Body>"
-                                s+="</SOAP-ENV:Envelope>"
-                                                         
-      return s
+	var s = '';
+
+	s += "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+	s += "<SOAP-ENV:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
+	s += "<SOAP-ENV:Body>"
+	s += "<cmd:projectionRequest version=\"9.0sp1b, Build 09\" username=\""
+
+	s += username
+
+	s += "\"  "
+	s += "password=\""
+
+	s += token
+
+	s += "\" "
+	s += "xsi:type=\"ns1:ProjectionRequest\" includeInactive=\"true\" xmlns:cmd=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\" xmlns:oper=\"http://primavera.com/schemas/pvapi/PVOperational.xsd\" xmlns:ns1=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\">"
+	s += "<locationProjection xsi:type=\"ns2:LocationProjectionSpecification\" xmlns:ns2=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\"/>"
+	s += "</cmd:projectionRequest>"
+	s += "</SOAP-ENV:Body>"
+	s += "</SOAP-ENV:Envelope>"
+
+	return s
 	
 }
 
@@ -555,3 +745,93 @@ pvService.getLocationMap = function(callback) {
 }
 
 
+
+//---------------------------------------------------below is approval code----------------------------------------------------------------------------------
+
+pvService.getApprovalSoap = function(rowInfoArray){
+
+var userInfo = pvService.getUserInfo();
+var username = userInfo.username;
+var token = userInfo.token;
+
+	
+var head = "";
+head += "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+head += "<SOAP-ENV:Envelope xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">"
+head += "<SOAP-ENV:Body>"
+head += "<cmd:changeRequest version=\"9.0sp1b, Build 09\" username=\""
+head += username
+head += "\" "
+head += "password=\""
+head += token
+head += "\" "
+head += "xsi:type=\"ns1:ChangeRequest\" xmlns:cmd=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\" xmlns:oper=\"http://primavera.com/schemas/pvapi/PVOperational.xsd\" xmlns:chge=\"http://primavera.com/schemas/pvapi/PVChange.xsd\" xmlns:ns1=\"http://primavera.com/schemas/pvapi/PVCmd.xsd\">"
+head += "<transactionCommitMode>EXTENDED_SYNCH</transactionCommitMode>"
+
+
+	var body = '';
+	for (var i = 0; i < rowInfoArray.length; i++) {
+		var rowInfo = rowInfoArray[i];
+		var approvalStatus = rowInfo.approvalStatus;
+
+		var cellArray = rowInfo.submitRow.getElementsByTagName("timeSheetCells");
+		for (var j = 0; j < cellArray.length; j++) {
+			var cell = cellArray.item(j);
+			var cellIdentity = cell.getAttribute("identity");
+			var cellEntityInstanceVersion = cell.getAttribute("entityInstanceVersion");
+
+			var record = "";
+			record += "<records xsi:type=\"ns2:UpdateTimeSheetCell\" xmlns:ns2=\"http://primavera.com/schemas/pvapi/PVChange.xsd\">"
+			record += "<changeKind>UPDATE</changeKind>"
+			record += "<timeSheetCell identity=\""
+			record += cellIdentity
+			record += "\" entityInstanceVersion=\""
+			record += cellEntityInstanceVersion
+			record += "\" xsi:type=\"ns3:ModifiedTimeSheetCell\" xmlns:ns3=\"http://primavera.com/schemas/pvapi/PVChange.xsd\">"
+			record += "<approvalStatus>"
+			record += approvalStatus
+			record += "</approvalStatus>"
+			record += "</timeSheetCell>"
+			record += "</records>"
+
+			body += record;
+
+		}
+	}
+
+
+// 
+    // NSMutableString *body = [NSMutableString string];
+    // for (PVTimeSheetRow * row in rows) {
+        // for(PVTimeSheetCell *cell in row.timeSheetCells){
+             // NSString *record =[EnvelopeFactory contact:
+                      // @"<records xsi:type=\"ns2:UpdateTimeSheetCell\" xmlns:ns2=\"http://primavera.com/schemas/pvapi/PVChange.xsd\">"
+                      // @"<changeKind>UPDATE</changeKind>"
+                      // @"<timeSheetCell identity=\"",
+                      // cell.identity,
+                      // @"\" entityInstanceVersion=\"",
+                      // cell.entityInstanceVersion,
+                      // @"\" xsi:type=\"ns3:ModifiedTimeSheetCell\" xmlns:ns3=\"http://primavera.com/schemas/pvapi/PVChange.xsd\">"
+                      // @"<approvalStatus>",
+                      // statusOfRow(row),
+                      // @"</approvalStatus>"
+                      // @"</timeSheetCell>"
+                      // @"</records>",
+                      // nil
+                      // ];
+            // [body appendString:record];
+        // }
+    // }
+    
+
+	var tail = "";
+	tail += "</cmd:changeRequest>"
+	tail += "</SOAP-ENV:Body>"
+	tail += "</SOAP-ENV:Envelope>"
+
+
+	var soapResult = head + body + tail;
+	Titanium.API.log("-----changeRequest soap--->" + soapResult);
+	return soapResult;
+
+}
