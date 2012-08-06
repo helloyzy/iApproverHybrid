@@ -158,36 +158,6 @@ function _createLoginView() {
 		}
 	});
 	
-	function validationFailure(errorMsg) {
-		activityIndicator.hide();
-		var errorDialog = Ti.UI.createAlertDialog({
-			message: errorMsg ? errorMsg : 'Please check your network connection and try again!',
-			ok: 'OK',
-			title: 'Authentication Failure'
-		});
-		errorDialog.show();
-	}
-	
-	function validationSuccess() {
-		var _userToken_onload = function(e) {
-			activityIndicator.hide();
-			var responseStr = e.source.responseText;
-			var userToken = Ti.Network.decodeURIComponent(_strBetween(responseStr,'AuthInfo', '&timeout='));
-			var userID = _strBetween(responseStr, '&userOID=', '&configureExpenses=');
-			_userModule.setUserInfo({
-			    username:_strTrim(txtUsername.value),
-			    password:remMeSwitch.value ? _strTrim(txtPwd.value) : '',
-			    userID:userID,
-			    token:userToken
-			});
-			// fetchReportWithUserInfo(_userModule.userInfo());
-		};
-		var _userToken_onerror = function(e) {
-			validationFailure();
-		}
-		_userService.getUserToken(_userToken_onload, _userToken_onerror);
-	}
-	
 	btn.addEventListener('click', function(e) {	
 	    var username = _strTrim(txtUsername.value);
 	    var password = _strTrim(txtPwd.value);
@@ -223,6 +193,7 @@ function _createLoginView() {
 				    userId:userId,
 				    token:userToken
 				});
+				fetchReportWithUserInfo(_userModule.userInfo());
 			};
 			var _userToken_onerror = function(e) {
 				validationFailure();
